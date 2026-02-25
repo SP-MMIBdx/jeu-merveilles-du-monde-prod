@@ -33,7 +33,6 @@ app.appendChild(p);
 
 // Setup Vite counter
 setupCounter(btn);
-
 // ------------------------
 // Phaser scene functions
 // ------------------------
@@ -66,6 +65,15 @@ function create() {
             // Display in-game
             this.add.text(20, 20, data.message, { fontSize: '20px', color: '#ffffff' });
         });
+
+        // Press SPACE to end the round and send score
+this.input.keyboard.on('keydown-SPACE', () => {
+    const pseudo = "Player1"; // For testing
+    const score = Math.floor(Math.random() * 100); // Random score for prototype
+    console.log("Round ended. Score:", score);
+    sendScore(pseudo, score).then(() => fetchLeaderboard.call(this));
+});
+
 }
 
 function update() {
@@ -97,6 +105,18 @@ async function sendScore(nom, scoreFinal) {
     console.log(resultat.message);
 }
 
+async function fetchLeaderboard() {
+    const response = await fetch('http://localhost:3000/api/scores');
+    const leaderboard = await response.json();
+    console.log("Leaderboard:", leaderboard);
+
+    // Display leaderboard on Phaser canvas
+    let y = 50;
+    leaderboard.forEach(entry => {
+        this.add.text(600, y, `${entry.pseudo}: ${entry.points}`, { fontSize: '16px', color: '#ffffff' });
+        y += 20;
+    });
+}
 
 // ------------------------
 // Phaser game config

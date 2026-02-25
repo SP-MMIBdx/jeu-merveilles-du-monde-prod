@@ -17,5 +17,10 @@ app.post('/api/score', (req, res) => {
 app.get('/api/hello', (req, res) => {
     res.json({ message: "Test Game Server" });
 });
+
+app.get('/api/scores', (req, res) => {
+    const sorted = [...scores].sort((a, b) => b.points - a.points);
+    res.json(sorted);
+});
  
 app.listen(3000, () => console.log("Serveur sur port 3000"));
