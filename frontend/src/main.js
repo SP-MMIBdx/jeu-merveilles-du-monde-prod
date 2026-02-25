@@ -58,6 +58,14 @@ function create() {
 
     // 4️⃣ Keyboard input
     cursors = this.input.keyboard.createCursorKeys();
+    
+    fetch('http://localhost:3000/api/hello')
+        .then(res => res.json())
+        .then(data => {
+            console.log("Server says:", data.message);
+            // Display in-game
+            this.add.text(20, 20, data.message, { fontSize: '20px', color: '#ffffff' });
+        });
 }
 
 function update() {

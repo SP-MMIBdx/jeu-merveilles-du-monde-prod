@@ -15,7 +15,7 @@ app.post('/api/score', (req, res) => {
 
 // Test GET route
 app.get('/api/hello', (req, res) => {
-    res.json({ message: "Hello World" });
+    res.json({ message: "Test Game Server" });
 });
  
 app.listen(3000, () => console.log("Serveur sur port 3000"));
