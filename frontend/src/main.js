@@ -84,6 +84,20 @@ function update() {
     }
 }
 
+// Fonction pour envoyer le score à la fin de la partie
+async function sendScore(nom, scoreFinal) {
+    const data = { pseudo: nom, points: scoreFinal };
+    
+    const response = await fetch('http://localhost:3000/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    const resultat = await response.json();
+    console.log(resultat.message);
+}
+
+
 // ------------------------
 // Phaser game config
 // ------------------------
