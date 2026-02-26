@@ -75,6 +75,16 @@ function create() {
     // 8️⃣ Player ↔ biscuits overlap
     this.physics.add.overlap(player, biscuits, collectBiscuit, null, this);
 
+    // Finish line sprite
+    const finishLine = this.add.rectangle(750, 350, 20, 80, 0x00ff00);
+    this.physics.add.existing(finishLine, true); // static
+
+    // Player ↔ finish line
+    this.physics.add.overlap(player, finishLine, () => {
+        this.pseudo = "Player1"; // Or get from user input
+        endRound.call(this);
+    }, null, this);
+
     fetch('http://localhost:3000/api/hello')
         .then(res => res.json())
         .then(data => {
@@ -90,14 +100,19 @@ function create() {
     // Press SPACE to end the round and send score
     this.input.keyboard.on('keydown-SPACE', () => {
         const pseudo = "Player1"; // For testing
-        console.log("Round ended. Score:", score);
-        sendScore(pseudo, score).then(() => fetchLeaderboard.call(this));
-
+        this.pseudo = pseudo;      // Save to scene context
+        endRound.call(this);
     });
 
 }
 
 function update() {
+    // Stop all movement if round ended
+    if (this.roundEnded) {
+        player.body.setVelocityX(0);
+        return;
+    }
+
     // Horizontal movement
     if (cursors.left.isDown) {
         player.body.setVelocityX(-160);
@@ -118,6 +133,28 @@ function collectBiscuit(player, biscuit) {
 
     score += 1;
     scoreText.setText("Biscuits: " + score);
+}
+
+// Call this function when the round ends (finish line, time up, or player death)
+function endRound() {
+    if (this.roundEnded) return;
+    this.roundEnded = true;
+
+    const baseScore = score;
+    const timeBonus = this.remainingTime ? Math.floor(this.remainingTime * 10) : 0;
+    const finalScore = baseScore + timeBonus;
+
+    console.log("Round ended! Base:", baseScore, "Time bonus:", timeBonus, "Final:", finalScore);
+
+    // Send score
+    sendScore(this.pseudo || "Player1", finalScore).then(() => fetchLeaderboard.call(this));
+
+    // Stop player input / physics
+    player.body.setVelocity(0, 0);
+    player.body.allowGravity = false;
+
+    // Optional UI
+    if (this.showRoundEndUI) this.showRoundEndUI(finalScore, timeBonus);
 }
 
 // Fonction pour envoyer le score à la fin de la partie
