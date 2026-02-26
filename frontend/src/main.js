@@ -26,7 +26,7 @@ setupCounter(btn);
    Phaser Scene
 ----------------------- */
 
-function preload() {}
+function preload() { }
 
 function create() {
 
@@ -67,12 +67,23 @@ function create() {
     /* BISCUITS */
     this.biscuits = this.physics.add.group();
 
-    const biscuit = this.add.rectangle(400, 0, 20, 20, 0xffff00);
-    this.physics.add.existing(biscuit);
-    this.biscuits.add(biscuit);
+    // Spawn 5 biscuits at random x positions
+    for (let i = 0; i < 5; i++) {
+        const biscuit = this.add.rectangle(
+            Phaser.Math.Between(50, 750), // random x
+            Phaser.Math.Between(0, 50),   // random y near top
+            20, 20,
+            0xffff00
+        );
 
+        this.physics.add.existing(biscuit);
+        this.biscuits.add(biscuit);
+    }
+
+    // Collisions with ground
     this.physics.add.collider(this.biscuits, this.ground);
 
+    // Player overlaps biscuits
     this.physics.add.overlap(
         this.player,
         this.biscuits,
@@ -111,30 +122,30 @@ function create() {
 
     /* ROUND END UI */
 
-this.roundEndUI = this.add.container(400, 200).setVisible(false);
+    this.roundEndUI = this.add.container(400, 200).setVisible(false);
 
-const panel = this.add.rectangle(0, 0, 300, 180, 0x222222, 0.9);
-this.roundEndUI.add(panel);
+    const panel = this.add.rectangle(0, 0, 300, 180, 0x222222, 0.9);
+    this.roundEndUI.add(panel);
 
-this.roundEndScoreText = this.add.text(0, -40, "", {
-    fontSize: '22px',
-    color: '#ffffff'
-}).setOrigin(0.5);
+    this.roundEndScoreText = this.add.text(0, -40, "", {
+        fontSize: '22px',
+        color: '#ffffff'
+    }).setOrigin(0.5);
 
-this.roundEndLeaderboardText = this.add.text(0, 10, "", {
-    fontSize: '16px',
-    color: '#ffffaa',
-    align: 'center'
-}).setOrigin(0.5);
+    this.roundEndLeaderboardText = this.add.text(0, 10, "", {
+        fontSize: '16px',
+        color: '#ffffaa',
+        align: 'center'
+    }).setOrigin(0.5);
 
-this.roundEndRestartText = this.add.text(0, 60, "Press SPACE to restart", {
-    fontSize: '14px',
-    color: '#ffffff'
-}).setOrigin(0.5);
+    this.roundEndRestartText = this.add.text(0, 60, "Press SPACE to restart", {
+        fontSize: '14px',
+        color: '#ffffff'
+    }).setOrigin(0.5);
 
-this.roundEndUI.add(this.roundEndScoreText);
-this.roundEndUI.add(this.roundEndLeaderboardText);
-this.roundEndUI.add(this.roundEndRestartText);
+    this.roundEndUI.add(this.roundEndScoreText);
+    this.roundEndUI.add(this.roundEndLeaderboardText);
+    this.roundEndUI.add(this.roundEndRestartText);
 
     /* BACKEND TEST (THIS MUST BE INSIDE CREATE) */
     fetch('http://localhost:3000/api/hello')
@@ -192,24 +203,24 @@ async function endRound() {
 
     console.log("Final score:", finalScore);
 
-    this.player.body.setVelocity(0,0);
+    this.player.body.setVelocity(0, 0);
     this.player.body.allowGravity = false;
 
-let leaderboard = [];
+    let leaderboard = [];
 
-try {
-    await sendScore("Player1", finalScore);
-    leaderboard = await fetchLeaderboard();
-} catch (err) {
-    console.error("Leaderboard error:", err);
-}
+    try {
+        await sendScore("Player1", finalScore);
+        leaderboard = await fetchLeaderboard();
+    } catch (err) {
+        console.error("Leaderboard error:", err);
+    }
 
     /* DISPLAY UI */
     this.roundEndScoreText.setText("Final Score: " + finalScore);
 
     let text = leaderboard.length ? "" : "No leaderboard data";
-    leaderboard.slice(0,5).forEach((entry, i) => {
-        text += `${i+1}. ${entry.pseudo} - ${entry.points}\n`;
+    leaderboard.slice(0, 5).forEach((entry, i) => {
+        text += `${i + 1}. ${entry.pseudo} - ${entry.points}\n`;
     });
 
     this.roundEndLeaderboardText.setText(text);
