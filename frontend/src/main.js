@@ -43,23 +43,23 @@ function create() {
         Phaser.Input.Keyboard.KeyCodes.SPACE
     );
 
-    // UI Container:
-    this.hud = this.add.container(20, 20); // top-left corner
+// UI Container:
+this.hud = this.add.container(20, 20); // top-left corner
 
-    // Create texts
-    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
-    this.scoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffffff' });
-    this.timerText = this.add.text(0, 0, "Time: 0", { fontSize: '20px', color: '#ffffff' });
+// Create texts
+this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
+this.scoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffffff' });
+this.timerText = this.add.text(0, 0, "Time: 0", { fontSize: '20px', color: '#ffffff' });
 
-    // Add texts to HUD container
-    [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
+// Add texts to HUD container
+[this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
 
-    // Use offsetY to stack them automatically
-    let offsetY = 0;
-    [this.levelText, this.scoreText, this.timerText].forEach(txt => {
-        txt.setY(offsetY);
-        offsetY += parseInt(txt.style.fontSize, 10) + 5; // 5px padding between lines
-    });
+// Use offsetY to stack them automatically
+let offsetY = 0;
+[this.levelText, this.scoreText, this.timerText].forEach(txt => {
+    txt.setY(offsetY);
+    offsetY += parseInt(txt.style.fontSize, 10) + 5; // 5px padding between lines
+});
 
     this.hud.add(this.timerText);
     /* WORLD */
@@ -212,8 +212,8 @@ async function endRound() {
     const multiplier = 10; // points per biscuit
     const timeFactor = 5;  // points per remaining second
 
-    // Final score
-    const finalScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
+// Final score
+const finalScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
 
     console.log("Final score:", finalScore);
 
