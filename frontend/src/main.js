@@ -85,6 +85,28 @@ function create() {
         endRound.call(this);
     }, null, this);
 
+    this.remainingTime = 30; // 30 seconds per round
+
+// Display timer
+this.timerText = this.add.text(20, 80, `Time: ${this.remainingTime}`, { fontSize: '20px', color: '#ffffff' });
+
+// Timer countdown
+this.time.addEvent({
+    delay: 1000, // every second
+    callback: () => {
+        if (this.roundEnded) return;
+
+        this.remainingTime--;
+        this.timerText.setText(`Time: ${this.remainingTime}`);
+
+        if (this.remainingTime <= 0) {
+            this.pseudo = "Player1"; // Or get from input
+            endRound.call(this);
+        }
+    },
+    loop: true
+});
+
     fetch('http://localhost:3000/api/hello')
         .then(res => res.json())
         .then(data => {
