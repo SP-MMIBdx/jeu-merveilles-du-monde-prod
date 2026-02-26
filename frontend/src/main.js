@@ -43,17 +43,25 @@ function create() {
         Phaser.Input.Keyboard.KeyCodes.SPACE
     );
 
-    /* UI */
-    this.scoreText = this.add.text(20, 50, "Biscuits: 0", {
-        fontSize: '20px',
-        color: '#ffffff'
+    // UI Container:
+    this.hud = this.add.container(20, 20); // top-left corner
+
+    // Create texts
+    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
+    this.scoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffffff' });
+    this.timerText = this.add.text(0, 0, "Time: 0", { fontSize: '20px', color: '#ffffff' });
+
+    // Add texts to HUD container
+    [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
+
+    // Use offsetY to stack them automatically
+    let offsetY = 0;
+    [this.levelText, this.scoreText, this.timerText].forEach(txt => {
+        txt.setY(offsetY);
+        offsetY += parseInt(txt.style.fontSize, 10) + 5; // 5px padding between lines
     });
 
-    this.timerText = this.add.text(20, 80, "Time: 30", {
-        fontSize: '20px',
-        color: '#ffffff'
-    });
-
+    this.hud.add(this.timerText);
     /* WORLD */
     this.ground = this.add.rectangle(400, 380, 800, 40, 0x666666);
     this.physics.add.existing(this.ground, true);
@@ -151,8 +159,10 @@ function create() {
     fetch('http://localhost:3000/api/hello')
         .then(res => res.json())
         .then(data => {
-            console.log("Server:", data.message);
-        });
+            // Example: data.message = "Level 1"
+            this.levelText.setText(data.message);
+        })
+        .catch(err => console.error("Could not fetch level:", err));
 }
 
 function update() {
@@ -189,7 +199,7 @@ function update() {
 function collectBiscuit(player, biscuit) {
     biscuit.destroy();
     this.score++;
-    this.scoreText.setText("Biscuits: " + this.score);
+    this.scoreText.setText("Score: " + this.score);
 }
 
 async function endRound() {
@@ -199,7 +209,11 @@ async function endRound() {
 
     this.timerEvent.remove();
 
-    const finalScore = this.score + this.remainingTime;
+    const multiplier = 10; // points per biscuit
+    const timeFactor = 5;  // points per remaining second
+
+    // Final score
+    const finalScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
 
     console.log("Final score:", finalScore);
 
