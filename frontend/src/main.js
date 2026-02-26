@@ -48,17 +48,21 @@ this.hud = this.add.container(20, 20); // top-left corner
 
 // Create texts
 this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
-this.scoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffffff' });
-this.timerText = this.add.text(0, 0, "Time: 0", { fontSize: '20px', color: '#ffffff' });
+this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#ffffff' });
+this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#ffffff' });
 
 // Add texts to HUD container
 [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
 
-// Use offsetY to stack them automatically
+// After levelText, scoreText, timerText
+this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffff00' });
+this.hud.add(this.runningScoreText);
+
+// Stack them vertically
 let offsetY = 0;
-[this.levelText, this.scoreText, this.timerText].forEach(txt => {
+[this.levelText, this.scoreText, this.timerText, this.runningScoreText].forEach(txt => {
     txt.setY(offsetY);
-    offsetY += parseInt(txt.style.fontSize, 10) + 5; // 5px padding between lines
+    offsetY += parseInt(txt.style.fontSize, 10) + 5; // spacing
 });
 
     this.hud.add(this.timerText);
@@ -112,21 +116,24 @@ let offsetY = 0;
         this
     );
 
-    /* TIMER */
-    this.timerEvent = this.time.addEvent({
-        delay: 1000,
-        loop: true,
-        callback: () => {
-            if (this.roundEnded) return;
+/* TIMER */
+this.timerEvent = this.time.addEvent({
+    delay: 1000,
+    loop: true,
+    callback: () => {
+        if (this.roundEnded) return;
 
-            this.remainingTime--;
-            this.timerText.setText("Time: " + this.remainingTime);
+        this.remainingTime--;
+        this.timerText.setText("Time: " + this.remainingTime);
 
-            if (this.remainingTime <= 0) {
-                endRound.call(this);
-            }
+        // Update the arcade-style running score every second
+        updateRunningScore.call(this);
+
+        if (this.remainingTime <= 0) {
+            endRound.call(this);
         }
-    });
+    }
+});
 
     /* ROUND END UI */
 
@@ -199,9 +206,10 @@ function update() {
 function collectBiscuit(player, biscuit) {
     biscuit.destroy();
     this.score++;
-    this.scoreText.setText("Score: " + this.score);
-}
+    this.scoreText.setText("Biscuits: " + this.score);
 
+    updateRunningScore.call(this); // update arcade-style score
+}
 async function endRound() {
 
     if (this.roundEnded) return;
@@ -239,6 +247,13 @@ const finalScore = Math.floor(this.score * multiplier + this.remainingTime * tim
 
     this.roundEndLeaderboardText.setText(text);
     this.roundEndUI.setVisible(true);
+}
+
+function updateRunningScore() {
+    const multiplier = 10; // points per biscuit
+    const timeFactor = 5;  // points per remaining second
+    const runningScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
+    this.runningScoreText.setText("Score: " + runningScore);
 }
 
 async function fetchLeaderboard() {
