@@ -46,34 +46,34 @@ function preload() {
 function create() {
     console.log("Phaser create called");
 
-   // 1️⃣ Ground (static)
-ground = this.add.rectangle(400, 380, 800, 40, 0x666666);
-this.physics.add.existing(ground, true);
+    // 1️⃣ Ground (static)
+    ground = this.add.rectangle(400, 380, 800, 40, 0x666666);
+    this.physics.add.existing(ground, true);
 
-// 2️⃣ Player (dynamic)
-player = this.add.rectangle(100, 200, 30, 30, 0xff0000);
-this.physics.add.existing(player);
-player.body.setCollideWorldBounds(true);
+    // 2️⃣ Player (dynamic)
+    player = this.add.rectangle(100, 200, 30, 30, 0xff0000);
+    this.physics.add.existing(player);
+    player.body.setCollideWorldBounds(true);
 
-// 3️⃣ Player ↔ ground collision
-this.physics.add.collider(player, ground);
+    // 3️⃣ Player ↔ ground collision
+    this.physics.add.collider(player, ground);
 
-// 4️⃣ Keyboard input
-cursors = this.input.keyboard.createCursorKeys();
+    // 4️⃣ Keyboard input
+    cursors = this.input.keyboard.createCursorKeys();
 
-// 5️⃣ Create biscuits group FIRST
-biscuits = this.physics.add.group();
+    // 5️⃣ Create biscuits group FIRST
+    biscuits = this.physics.add.group();
 
-// 6️⃣ NOW add biscuits ↔ ground collision
-this.physics.add.collider(biscuits, ground);
+    // 6️⃣ NOW add biscuits ↔ ground collision
+    this.physics.add.collider(biscuits, ground);
 
-// 7️⃣ Create a biscuit
-const biscuit = this.add.rectangle(400, 0, 20, 20, 0xffff00);
-this.physics.add.existing(biscuit);
-biscuits.add(biscuit);
+    // 7️⃣ Create a biscuit
+    const biscuit = this.add.rectangle(400, 0, 20, 20, 0xffff00);
+    this.physics.add.existing(biscuit);
+    biscuits.add(biscuit);
 
-// 8️⃣ Player ↔ biscuits overlap
-this.physics.add.overlap(player, biscuits, collectBiscuit, null, this);
+    // 8️⃣ Player ↔ biscuits overlap
+    this.physics.add.overlap(player, biscuits, collectBiscuit, null, this);
 
     fetch('http://localhost:3000/api/hello')
         .then(res => res.json())
@@ -90,9 +90,9 @@ this.physics.add.overlap(player, biscuits, collectBiscuit, null, this);
     // Press SPACE to end the round and send score
     this.input.keyboard.on('keydown-SPACE', () => {
         const pseudo = "Player1"; // For testing
-        const score = Math.floor(Math.random() * 100); // Random score for prototype
         console.log("Round ended. Score:", score);
         sendScore(pseudo, score).then(() => fetchLeaderboard.call(this));
+
     });
 
 }

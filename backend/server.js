@@ -15,7 +15,7 @@ app.post('/api/score', (req, res) => {
 
 // Test GET route
 app.get('/api/hello', (req, res) => {
-    res.json({ message: "Test Game Server" });
+    res.json({ message: "Level 1" });
 });
 
 app.get('/api/scores', (req, res) => {
