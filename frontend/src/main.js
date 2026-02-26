@@ -232,7 +232,7 @@ const finalScore = Math.floor(this.score * multiplier + this.remainingTime * tim
     let leaderboard = [];
 
     try {
-        await sendScore("Player1", finalScore);
+        await sendScore(this.playerName, finalScore);
         leaderboard = await fetchLeaderboard();
     } catch (err) {
         console.error("Leaderboard error:", err);
