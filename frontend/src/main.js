@@ -30,6 +30,7 @@ function preload() { }
 
 function create() {
 
+    this.scene.pause(); // pause everything in this scene until we get the player's name
     console.log("Phaser create called");
 
     /* STATE */
@@ -272,6 +273,54 @@ async function sendScore(pseudo, score) {
     });
 }
 
+function showPlayerInput(onStart) {
+    // Container div
+    const overlay = document.createElement('div');
+    overlay.id = "player-input-overlay";
+    overlay.style.position = "absolute";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(0,0,0,0.7)";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+    overlay.style.zIndex = "1000";
+
+    // Label
+    const label = document.createElement("label");
+    label.textContent = "Enter your name:";
+    label.style.color = "#fff";
+    label.style.marginBottom = "10px";
+    overlay.appendChild(label);
+
+    // Input
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Your name";
+    input.style.padding = "8px";
+    input.style.fontSize = "16px";
+    overlay.appendChild(input);
+
+    // Start button
+    const startBtn = document.createElement("button");
+    startBtn.textContent = "Start";
+    startBtn.style.marginTop = "10px";
+    startBtn.style.padding = "8px 16px";
+    overlay.appendChild(startBtn);
+
+    document.body.appendChild(overlay);
+
+    // Start game callback
+    startBtn.addEventListener("click", () => {
+        const name = input.value.trim() || "Player1";
+        overlay.remove();
+        onStart(name);
+    });
+}
+
 /* -----------------------
    CONFIG
 ----------------------- */
@@ -288,4 +337,9 @@ const config = {
     parent: 'app'
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config); // 1. create game first
+
+showPlayerInput((playerName) => {      // 2. then ask for name
+    game.scene.scenes[0].playerName = playerName;
+    game.scene.scenes[0].scene.resume(); // 3. resume scene
+});
