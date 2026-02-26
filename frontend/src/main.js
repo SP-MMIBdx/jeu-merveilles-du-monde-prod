@@ -159,26 +159,28 @@ function collectBiscuit(player, biscuit) {
 
 // Call this function when the round ends (finish line, time up, or player death)
 function endRound() {
+    // Prevent multiple triggers
     if (this.roundEnded) return;
     this.roundEnded = true;
 
-    const baseScore = score;
-    const timeBonus = this.remainingTime ? Math.floor(this.remainingTime * 10) : 0;
-    const finalScore = baseScore + timeBonus;
+    // Ensure numeric values
+const baseScore = Number(score); // ensure numeric
+const timeBonus = Number(this.remainingTime ? Math.floor(this.remainingTime * 1) : 0); // numeric
+const finalScore = baseScore + timeBonus;
+    console.log(
+        `Round ended! Base: ${baseScore}, Time bonus: ${timeBonus}, Final score: ${finalScore}`
+    );
 
-    console.log("Round ended! Base:", baseScore, "Time bonus:", timeBonus, "Final:", finalScore);
-
-    // Send score
+    // Send score to backend and update leaderboard
     sendScore(this.pseudo || "Player1", finalScore).then(() => fetchLeaderboard.call(this));
 
-    // Stop player input / physics
+    // Stop player movement and gravity
     player.body.setVelocity(0, 0);
     player.body.allowGravity = false;
 
-    // Optional UI
+    // Optional: show round-end UI
     if (this.showRoundEndUI) this.showRoundEndUI(finalScore, timeBonus);
 }
-
 // Fonction pour envoyer le score à la fin de la partie
 async function sendScore(nom, scoreFinal) {
     const data = { pseudo: nom, points: scoreFinal };
