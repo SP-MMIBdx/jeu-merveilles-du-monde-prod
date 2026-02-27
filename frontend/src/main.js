@@ -3,7 +3,7 @@ import { setupCounter } from './counter.js';
 import Phaser from 'phaser';
 
 /* -----------------------
-   DOM (Vite template)
+DOM (Vite template)
 ----------------------- */
 
 const app = document.querySelector('#app');
