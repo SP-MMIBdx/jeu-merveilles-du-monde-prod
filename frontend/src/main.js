@@ -171,6 +171,14 @@ this.timerEvent = this.time.addEvent({
             this.levelText.setText(data.message);
         })
         .catch(err => console.error("Could not fetch level:", err));
+    
+        /* PLAYER INPUT (START SCREEN) */
+this.scene.pause();
+
+showPlayerInput((playerName) => {
+    this.playerName = playerName;
+    this.scene.resume();
+});
 }
 
 function update() {
@@ -338,8 +346,3 @@ const config = {
 };
 
 const game = new Phaser.Game(config); // 1. create game first
-
-showPlayerInput((playerName) => {      // 2. then ask for name
-    game.scene.scenes[0].playerName = playerName;
-    game.scene.scenes[0].scene.resume(); // 3. resume scene
-});
