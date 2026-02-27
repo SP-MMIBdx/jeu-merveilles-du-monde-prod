@@ -397,7 +397,7 @@ function showLogin(onLogin) {
 }
 
 /* -----------------------
-   CONFIG
+CONFIG
 ----------------------- */
 
 const config = {
