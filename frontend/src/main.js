@@ -44,27 +44,27 @@ function create() {
         Phaser.Input.Keyboard.KeyCodes.SPACE
     );
 
-// UI Container:
-this.hud = this.add.container(20, 20); // top-left corner
+    // UI Container:
+    this.hud = this.add.container(20, 20); // top-left corner
 
-// Create texts
-this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
-this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#ffffff' });
-this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#ffffff' });
+    // Create texts
+    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
+    this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#ffffff' });
+    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#ffffff' });
 
-// Add texts to HUD container
-[this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
+    // Add texts to HUD container
+    [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
 
-// After levelText, scoreText, timerText
-this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffff00' });
-this.hud.add(this.runningScoreText);
+    // After levelText, scoreText, timerText
+    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffff00' });
+    this.hud.add(this.runningScoreText);
 
-// Stack them vertically
-let offsetY = 0;
-[this.levelText, this.scoreText, this.timerText, this.runningScoreText].forEach(txt => {
-    txt.setY(offsetY);
-    offsetY += parseInt(txt.style.fontSize, 10) + 5; // spacing
-});
+    // Stack them vertically
+    let offsetY = 0;
+    [this.levelText, this.scoreText, this.timerText, this.runningScoreText].forEach(txt => {
+        txt.setY(offsetY);
+        offsetY += parseInt(txt.style.fontSize, 10) + 5; // spacing
+    });
 
     this.hud.add(this.timerText);
     /* WORLD */
@@ -117,24 +117,24 @@ let offsetY = 0;
         this
     );
 
-/* TIMER */
-this.timerEvent = this.time.addEvent({
-    delay: 1000,
-    loop: true,
-    callback: () => {
-        if (this.roundEnded) return;
+    /* TIMER */
+    this.timerEvent = this.time.addEvent({
+        delay: 1000,
+        loop: true,
+        callback: () => {
+            if (this.roundEnded) return;
 
-        this.remainingTime--;
-        this.timerText.setText("Time: " + this.remainingTime);
+            this.remainingTime--;
+            this.timerText.setText("Time: " + this.remainingTime);
 
-        // Update the arcade-style running score every second
-        updateRunningScore.call(this);
+            // Update the arcade-style running score every second
+            updateRunningScore.call(this);
 
-        if (this.remainingTime <= 0) {
-            endRound.call(this);
+            if (this.remainingTime <= 0) {
+                endRound.call(this);
+            }
         }
-    }
-});
+    });
 
     /* ROUND END UI */
 
@@ -171,16 +171,15 @@ this.timerEvent = this.time.addEvent({
             this.levelText.setText(data.message);
         })
         .catch(err => console.error("Could not fetch level:", err));
-    
-        /* PLAYER INPUT (START SCREEN) */
-this.scene.pause();
 
-this.scene.pause(); // pause the game until login
+    /* PLAYER INPUT (START SCREEN) */
 
-showLogin((playerId) => {
-    this.playerId = playerId; // store the playerId
-    this.scene.resume();       // resume game exactly where it left off
-});
+    this.scene.pause(); // pause the game until login
+
+    showLogin((playerId) => {
+        this.playerId = playerId; // store the playerId
+        this.scene.resume();       // resume game exactly where it left off
+    });
 }
 
 function update() {
@@ -231,8 +230,8 @@ async function endRound() {
     const multiplier = 10; // points per biscuit
     const timeFactor = 5;  // points per remaining second
 
-// Final score
-const finalScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
+    // Final score
+    const finalScore = Math.floor(this.score * multiplier + this.remainingTime * timeFactor);
 
     console.log("Final score:", finalScore);
 
@@ -242,7 +241,7 @@ const finalScore = Math.floor(this.score * multiplier + this.remainingTime * tim
     let leaderboard = [];
 
     try {
-        await sendScore(this.playerName, finalScore);
+        await sendScore(this.playerId, finalScore);
         leaderboard = await fetchLeaderboard();
     } catch (err) {
         console.error("Leaderboard error:", err);
@@ -253,8 +252,11 @@ const finalScore = Math.floor(this.score * multiplier + this.remainingTime * tim
 
     let text = leaderboard.length ? "" : "No leaderboard data";
     leaderboard.slice(0, 5).forEach((entry, i) => {
-        text += `${i + 1}. ${entry.pseudo} - ${entry.points}\n`;
+        // entry.pseudo now contains the logged-in username
+        text += `${i + 1}. ${entry.playerId} - ${entry.points}\n`;
     });
+
+    this.roundEndLeaderboardText.setText(text);
 
     this.roundEndLeaderboardText.setText(text);
     this.roundEndUI.setVisible(true);
@@ -272,65 +274,126 @@ async function fetchLeaderboard() {
     return await response.json();
 }
 
-async function sendScore(pseudo, score) {
+async function sendScore(playerId, score) {
     await fetch('http://localhost:3000/api/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            pseudo: pseudo,
+            playerId, // <- use playerId from login
             points: score
         })
     });
 }
 
 function showLogin(onLogin) {
+    // Overlay container
     const overlay = document.createElement('div');
-    overlay.style = `
-        position:absolute;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        background:rgba(0,0,0,0.7);
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        z-index:1000;
-    `;
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '1000';
 
-    const input = document.createElement('input');
-    input.placeholder = "Username";
+    // Title
+    const title = document.createElement('h2');
+    title.textContent = 'Login or Sign Up';
+    title.style.color = '#fff';
+    title.style.marginBottom = '20px';
+    overlay.appendChild(title);
 
+    // Login input
+    const loginInput = document.createElement('input');
+    loginInput.type = 'text';
+    loginInput.placeholder = 'Username';
+    loginInput.style.padding = '8px';
+    loginInput.style.marginBottom = '10px';
+    overlay.appendChild(loginInput);
+
+    // Password input
+    const passwordInput = document.createElement('input');
+    passwordInput.type = 'password';
+    passwordInput.placeholder = 'Password';
+    passwordInput.style.padding = '8px';
+    passwordInput.style.marginBottom = '10px';
+    overlay.appendChild(passwordInput);
+
+    // Status message
+    const status = document.createElement('div');
+    status.style.color = 'yellow';
+    status.style.marginBottom = '10px';
+    overlay.appendChild(status);
+
+    // Buttons container
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '10px';
+    overlay.appendChild(btnContainer);
+
+    // Sign in button
     const signInBtn = document.createElement('button');
-    signInBtn.textContent = "Sign In";
+    signInBtn.textContent = 'Sign In';
+    btnContainer.appendChild(signInBtn);
 
+    // Sign up button
     const signUpBtn = document.createElement('button');
-    signUpBtn.textContent = "Sign Up";
-    signUpBtn.style.marginTop = "5px";
+    signUpBtn.textContent = 'Sign Up';
+    btnContainer.appendChild(signUpBtn);
 
-    overlay.append(input, signInBtn, signUpBtn);
     document.body.appendChild(overlay);
 
-    const handleLogin = async (url) => {
-        try {
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ login: input.value.trim() || "Player1" })
-            });
-            if (!res.ok) throw new Error("Login failed");
-            const data = await res.json();
-            overlay.remove();
-            onLogin(data.playerId);
-        } catch (err) {
-            alert("Login failed");
-            console.error(err);
-        }
+    // Helper function for fetch
+    const postData = async (url, payload) => {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Server error');
+        return data;
     };
 
-    signInBtn.onclick = () => handleLogin("http://localhost:3000/api/signin");
-    signUpBtn.onclick = () => handleLogin("http://localhost:3000/api/signup");
+    // Sign In
+    signInBtn.addEventListener('click', async () => {
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (!login || !password) {
+            status.textContent = 'Please enter username and password';
+            return;
+        }
+
+        try {
+            const data = await postData('http://localhost:3000/api/signin', { login, password });
+            overlay.remove();
+            onLogin(data.playerId); // resume Phaser game
+        } catch (err) {
+            status.textContent = err.message;
+        }
+    });
+
+    // Sign Up
+    signUpBtn.addEventListener('click', async () => {
+        const login = loginInput.value.trim();
+        const password = passwordInput.value.trim();
+        if (!login || !password) {
+            status.textContent = 'Please enter username and password';
+            return;
+        }
+
+        try {
+            const data = await postData('http://localhost:3000/api/signup', { login, password });
+            overlay.remove();
+            onLogin(data.playerId); // resume Phaser game
+        } catch (err) {
+            status.textContent = err.message;
+        }
+    });
 }
 
 /* -----------------------
