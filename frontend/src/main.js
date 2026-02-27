@@ -23,7 +23,7 @@ app.appendChild(card);
 setupCounter(btn);
 
 /* -----------------------
-   Phaser Scene
+Phaser Scene
 ----------------------- */
 
 function preload() { }
@@ -210,7 +210,7 @@ function update() {
 }
 
 /* -----------------------
-   GAME LOGIC
+GAME LOGIC
 ----------------------- */
 
 function collectBiscuit(player, biscuit) {
