@@ -175,9 +175,11 @@ this.timerEvent = this.time.addEvent({
         /* PLAYER INPUT (START SCREEN) */
 this.scene.pause();
 
-showPlayerInput((playerName) => {
-    this.playerName = playerName;
-    this.scene.resume();
+this.scene.pause(); // pause the game until login
+
+showLogin((playerId) => {
+    this.playerId = playerId; // store the playerId
+    this.scene.resume();       // resume game exactly where it left off
 });
 }
 
@@ -281,52 +283,54 @@ async function sendScore(pseudo, score) {
     });
 }
 
-function showPlayerInput(onStart) {
-    // Container div
+function showLogin(onLogin) {
     const overlay = document.createElement('div');
-    overlay.id = "player-input-overlay";
-    overlay.style.position = "absolute";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-    overlay.style.background = "rgba(0,0,0,0.7)";
-    overlay.style.display = "flex";
-    overlay.style.flexDirection = "column";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-    overlay.style.zIndex = "1000";
+    overlay.style = `
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.7);
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        z-index:1000;
+    `;
 
-    // Label
-    const label = document.createElement("label");
-    label.textContent = "Enter your name:";
-    label.style.color = "#fff";
-    label.style.marginBottom = "10px";
-    overlay.appendChild(label);
+    const input = document.createElement('input');
+    input.placeholder = "Username";
 
-    // Input
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Your name";
-    input.style.padding = "8px";
-    input.style.fontSize = "16px";
-    overlay.appendChild(input);
+    const signInBtn = document.createElement('button');
+    signInBtn.textContent = "Sign In";
 
-    // Start button
-    const startBtn = document.createElement("button");
-    startBtn.textContent = "Start";
-    startBtn.style.marginTop = "10px";
-    startBtn.style.padding = "8px 16px";
-    overlay.appendChild(startBtn);
+    const signUpBtn = document.createElement('button');
+    signUpBtn.textContent = "Sign Up";
+    signUpBtn.style.marginTop = "5px";
 
+    overlay.append(input, signInBtn, signUpBtn);
     document.body.appendChild(overlay);
 
-    // Start game callback
-    startBtn.addEventListener("click", () => {
-        const name = input.value.trim() || "Player1";
-        overlay.remove();
-        onStart(name);
-    });
+    const handleLogin = async (url) => {
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ login: input.value.trim() || "Player1" })
+            });
+            if (!res.ok) throw new Error("Login failed");
+            const data = await res.json();
+            overlay.remove();
+            onLogin(data.playerId);
+        } catch (err) {
+            alert("Login failed");
+            console.error(err);
+        }
+    };
+
+    signInBtn.onclick = () => handleLogin("http://localhost:3000/api/signin");
+    signUpBtn.onclick = () => handleLogin("http://localhost:3000/api/signup");
 }
 
 /* -----------------------
