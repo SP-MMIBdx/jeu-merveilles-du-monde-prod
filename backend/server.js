@@ -39,6 +39,10 @@ function saveQueue(queue) {
     fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2));
 }
 
+/* -------------------
+Routes
+------------------- */
+// /signup, /signin, /score, /scores routes here
 
 // Save score
 app.post('/api/score', (req, res) => {
@@ -90,5 +94,30 @@ app.post('/api/signin', (req, res) => {
     res.json({ message: "Login success", playerId: login });
 });
 
+// Join multiplayer queue
+app.post('/api/join-queue', (req, res) => {
+    const { playerId } = req.body;
+    if (!playerId) return res.status(400).json({ message: "Missing playerId" });
+
+    // Check if already in queue
+    if (!queue.includes(playerId)) {
+        queue.push(playerId);
+        saveQueue();
+    }
+
+    // Check if there are at least 2 players to match
+    if (queue.length >= 2) {
+        const match = queue.splice(0, 2); // remove first two from queue
+        saveQueue();
+        return res.json({ matched: true, players: match });
+    }
+
+    res.json({ matched: false });
+});
+
+// Optional: Check current queue (for debugging)
+app.get('/api/queue', (req, res) => {
+    res.json(queue);
+});
 
 app.listen(3000, () => console.log("Serveur sur port 3000"));
