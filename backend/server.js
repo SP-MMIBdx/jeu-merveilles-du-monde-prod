@@ -7,8 +7,17 @@ const path = require('path');
 const usersFile = path.join(__dirname, 'data/users.json');
 const scoresFile = path.join(__dirname, 'data/scores.json');
 
-let users = JSON.parse(fs.readFileSync(usersFile, 'utf8') || '[]');
-let scores = JSON.parse(fs.readFileSync(scoresFile, 'utf8') || '[]');
+function loadJSON(filePath) {
+    try {
+        const data = fs.readFileSync(filePath, 'utf8');
+        return data ? JSON.parse(data) : [];
+    } catch (err) {
+        return [];
+    }
+}
+
+let users = loadJSON(usersFile);
+let scores = loadJSON(scoresFile);
 
 app.use(cors());
 app.use(express.json());
