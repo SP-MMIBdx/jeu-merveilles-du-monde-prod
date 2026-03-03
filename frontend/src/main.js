@@ -15,23 +15,29 @@ app.appendChild(title);
 const card = document.createElement('div');
 card.classList.add('card');
 
-const btn = document.createElement('button');
+/*const btn = document.createElement('button');
 btn.id = 'counter';
 card.appendChild(btn);
 app.appendChild(card);
 
-setupCounter(btn);
+setupCounter(btn);*/
 
 /* -----------------------
 Phaser Scene
 ----------------------- */
 
-function preload() { }
+function preload() {
+    this.load.image('bg', 'assets/img/fondjeu.png');
+}
 
 function create() {
 
     this.scene.pause(); // pause everything in this scene until we get the player's name
     console.log("Phaser create called");
+
+    this.add.image(0, 0, 'bg')
+        .setOrigin(0, 0)
+        .setDisplaySize(this.scale.width, this.scale.height);
 
     /* STATE */
     this.roundEnded = false;
@@ -48,15 +54,15 @@ function create() {
     this.hud = this.add.container(20, 20); // top-left corner
 
     // Create texts
-    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#ffffff' });
-    this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#ffffff' });
-    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#ffffff' });
+    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#000000' });
+    this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#000000' });
+    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#000000' });
 
     // Add texts to HUD container
     [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
 
     // After levelText, scoreText, timerText
-    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#ffff00' });
+    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#000000' });
     this.hud.add(this.runningScoreText);
 
     // Stack them vertically
@@ -68,8 +74,9 @@ function create() {
 
     this.hud.add(this.timerText);
     /* WORLD */
-    this.ground = this.add.rectangle(400, 380, 800, 40, 0x666666);
+    this.ground = this.add.rectangle(400, 380, 800, 105, 0x666666);
     this.physics.add.existing(this.ground, true);
+    this.ground.setVisible(false);
 
     this.player = this.add.rectangle(100, 200, 30, 30, 0xff0000);
     this.physics.add.existing(this.player);
