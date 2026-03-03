@@ -6,6 +6,7 @@ const path = require('path');
 
 const usersFile = path.join(__dirname, 'data/users.json');
 const scoresFile = path.join(__dirname, 'data/scores.json');
+const queueFile = path.join(__dirname, 'data/queue.json');
 
 function loadJSON(filePath) {
     try {
