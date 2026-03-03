@@ -7,7 +7,26 @@ const path = require('path');
 // Define file paths
 const usersFile = path.join(__dirname, 'data/users.json');
 const scoresFile = path.join(__dirname, 'data/scores.json');
+
+// Load or initialize multiplayer queue
 const queueFile = path.join(__dirname, 'data/queue.json');
+
+/* -------------------
+Queue helpers
+------------------- */
+
+function loadQueue() {
+    if (!fs.existsSync(queueFile)) return [];
+    const data = fs.readFileSync(queueFile, 'utf8');
+    return data ? JSON.parse(data) : [];
+}
+
+let queue = loadQueue(); // <-- store in-memory queue
+
+function saveQueue(queue) {
+    fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2));
+}
+
 
 // Define a helper function first
 
@@ -27,17 +46,6 @@ let scores = loadJSON(scoresFile);
 app.use(cors());
 app.use(express.json());
 
-/* -------------------
-Queue helpers
-------------------- */
-function loadQueue() {
-    if (!fs.existsSync(queueFile)) return [];
-    return JSON.parse(fs.readFileSync(queueFile, 'utf8') || '[]');
-}
-
-function saveQueue(queue) {
-    fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2));
-}
 
 /* -------------------
 Routes
@@ -99,20 +107,35 @@ app.post('/api/join-queue', (req, res) => {
     const { playerId } = req.body;
     if (!playerId) return res.status(400).json({ message: "Missing playerId" });
 
-    // Check if already in queue
+    // Add player to queue if not already in it
     if (!queue.includes(playerId)) {
         queue.push(playerId);
-        saveQueue();
+        saveQueue(queue);
     }
 
-    // Check if there are at least 2 players to match
+    // If at least 2 players, match the first two
     if (queue.length >= 2) {
-        const match = queue.splice(0, 2); // remove first two from queue
-        saveQueue();
+        const match = queue.splice(0, 2);
+        saveQueue(queue);
         return res.json({ matched: true, players: match });
     }
 
-    res.json({ matched: false });
+    // No match yet
+    res.json({ matched: false, players: [] });
+});
+
+// Check queue status for polling
+app.get('/api/queue-status', (req, res) => {
+    const { playerId } = req.query;
+    if (!playerId) return res.status(400).json({ message: "Missing playerId" });
+
+    // Player is still in queue → waiting
+    if (queue.includes(playerId)) {
+        return res.json({ matched: false });
+    }
+
+    // Player has been matched and removed
+    res.json({ matched: true });
 });
 
 // Optional: Check current queue (for debugging)

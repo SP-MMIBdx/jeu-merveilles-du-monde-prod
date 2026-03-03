@@ -183,9 +183,10 @@ function create() {
 
     this.scene.pause(); // pause the game until login
 
-    showLogin((playerId) => {
-        this.playerId = playerId; // store the playerId
-    // Show singleplayer vs multiplayer choice
+ showLogin(async (playerId) => {
+    this.playerId = playerId;
+
+    // Show singleplayer vs multiplayer choice overlay
     const overlay = document.createElement('div');
     overlay.style.position = 'absolute';
     overlay.style.top = '0';
@@ -226,11 +227,12 @@ function create() {
         this.scene.resume(); // normal singleplayer flow
     });
 
-    mpBtn.addEventListener('click', () => {
+    mpBtn.addEventListener('click', async () => {
         overlay.remove();
-        enterMultiplayerQueue.call(this); // custom function to handle matchmaking
+        await enterMultiplayerQueue.call(this); // call async queue function
     });
 });
+
 }
 
 function update() {
@@ -445,6 +447,36 @@ function showLogin(onLogin) {
             status.textContent = err.message;
         }
     });
+}
+
+async function enterMultiplayerQueue() {
+    try {
+        const response = await fetch('http://localhost:3000/api/join-queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerId: this.playerId })
+        });
+        const data = await response.json();
+
+        if (data.matched) {
+            console.log("Match found with:", data.players);
+            this.scene.resume(); // resume game immediately
+        } else {
+            console.log("Waiting for another player...");
+            // poll the server until matched
+            const pollInterval = setInterval(async () => {
+                const res = await fetch(`http://localhost:3000/api/queue-status?playerId=${this.playerId}`);
+                const status = await res.json();
+                if (status.matched) {
+                    console.log("Match found via polling:", status.players);
+                    clearInterval(pollInterval);
+                    this.scene.resume();
+                }
+            }, 2000);
+        }
+    } catch (err) {
+        console.error("Queue error:", err);
+    }
 }
 
 /* -----------------------
