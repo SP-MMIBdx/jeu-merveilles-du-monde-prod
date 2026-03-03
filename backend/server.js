@@ -4,24 +4,41 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
+// Define file paths
 const usersFile = path.join(__dirname, 'data/users.json');
 const scoresFile = path.join(__dirname, 'data/scores.json');
 const queueFile = path.join(__dirname, 'data/queue.json');
 
+// Define a helper function first
+
 function loadJSON(filePath) {
     try {
-        const data = fs.readFileSync(filePath, 'utf8');
-        return data ? JSON.parse(data) : [];
+        const data = fs.readFileSync(filePath, 'utf8'); // read file
+        return data ? JSON.parse(data) : []; // parse JSON or return empty array if file is empty
     } catch (err) {
         return [];
     }
 }
 
+// Use the helper function to load variables
 let users = loadJSON(usersFile);
 let scores = loadJSON(scoresFile);
 
 app.use(cors());
 app.use(express.json());
+
+/* -------------------
+Queue helpers
+------------------- */
+function loadQueue() {
+    if (!fs.existsSync(queueFile)) return [];
+    return JSON.parse(fs.readFileSync(queueFile, 'utf8') || '[]');
+}
+
+function saveQueue(queue) {
+    fs.writeFileSync(queueFile, JSON.stringify(queue, null, 2));
+}
+
 
 // Save score
 app.post('/api/score', (req, res) => {
