@@ -185,8 +185,52 @@ function create() {
 
     showLogin((playerId) => {
         this.playerId = playerId; // store the playerId
-        this.scene.resume();       // resume game exactly where it left off
+    // Show singleplayer vs multiplayer choice
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '1000';
+
+    const title = document.createElement('h2');
+    title.textContent = 'Choose Mode';
+    title.style.color = '#fff';
+    title.style.marginBottom = '20px';
+    overlay.appendChild(title);
+
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '20px';
+    overlay.appendChild(btnContainer);
+
+    const spBtn = document.createElement('button');
+    spBtn.textContent = 'Singleplayer';
+    btnContainer.appendChild(spBtn);
+
+    const mpBtn = document.createElement('button');
+    mpBtn.textContent = 'Multiplayer';
+    btnContainer.appendChild(mpBtn);
+
+    document.body.appendChild(overlay);
+
+    // Button actions
+    spBtn.addEventListener('click', () => {
+        overlay.remove();
+        this.scene.resume(); // normal singleplayer flow
     });
+
+    mpBtn.addEventListener('click', () => {
+        overlay.remove();
+        enterMultiplayerQueue.call(this); // custom function to handle matchmaking
+    });
+});
 }
 
 function update() {
