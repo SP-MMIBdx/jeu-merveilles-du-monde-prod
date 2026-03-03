@@ -444,7 +444,24 @@ function showLogin(onLogin) {
 
 async function enterMultiplayerQueue() {
     return new Promise(async (resolve, reject) => {
+        let waitMsg;
+
         try {
+            // Create waiting message overlay
+            waitMsg = document.createElement('div');
+            waitMsg.textContent = "Waiting for another player...";
+            waitMsg.style.position = 'absolute';
+            waitMsg.style.top = '50%';
+            waitMsg.style.left = '50%';
+            waitMsg.style.transform = 'translate(-50%, -50%)';
+            waitMsg.style.color = "#fff";
+            waitMsg.style.fontSize = "24px";
+            waitMsg.style.background = "rgba(0,0,0,0.7)";
+            waitMsg.style.padding = "20px";
+            waitMsg.style.borderRadius = "10px";
+            waitMsg.style.zIndex = "1000";
+            document.body.appendChild(waitMsg);
+
             // join queue
             const response = await fetch('http://localhost:3000/api/join-queue', {
                 method: 'POST',
@@ -455,6 +472,7 @@ async function enterMultiplayerQueue() {
 
             if (data.matched) {
                 console.log("Match found immediately with:", data.players);
+                waitMsg.remove();
                 resolve(); // start the game
             } else {
                 console.log("Waiting for another player...");
@@ -465,15 +483,18 @@ async function enterMultiplayerQueue() {
                         if (status.matched) {
                             console.log("Match found via polling");
                             clearInterval(pollInterval);
+                            waitMsg.remove(); // remove overlay
                             resolve(); // start the game
                         }
                     } catch (err) {
                         clearInterval(pollInterval);
+                        waitMsg.remove();
                         reject(err);
                     }
                 }, 2000);
             }
         } catch (err) {
+            if (waitMsg) waitMsg.remove();
             reject(err);
         }
     });
