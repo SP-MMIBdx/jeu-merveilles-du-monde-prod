@@ -61,8 +61,6 @@ app.post('/api/score', (req, res) => {
     res.status(201).send({ message: "Score enregistré !" });
 });
 
-
-
 // Test route
 app.get('/api/hello', (req, res) => {
     res.json({ message: "Level 1" });
