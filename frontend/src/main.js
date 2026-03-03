@@ -166,63 +166,63 @@ function create() {
 
     /* PLAYER INPUT (START SCREEN) */
 
- showLogin(async (playerId) => {
-    this.playerId = playerId;
+    showLogin(async (playerId) => {
+        this.playerId = playerId;
 
-    // Show singleplayer vs multiplayer choice overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'absolute';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.background = 'rgba(0,0,0,0.85)';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '1000';
+        // Show singleplayer vs multiplayer choice overlay
+        const overlay = document.createElement('div');
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.85)';
+        overlay.style.display = 'flex';
+        overlay.style.flexDirection = 'column';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '1000';
 
-    const title = document.createElement('h2');
-    title.textContent = 'Choose Mode';
-    title.style.color = '#fff';
-    title.style.marginBottom = '20px';
-    overlay.appendChild(title);
+        const title = document.createElement('h2');
+        title.textContent = 'Choose Mode';
+        title.style.color = '#fff';
+        title.style.marginBottom = '20px';
+        overlay.appendChild(title);
 
-    const btnContainer = document.createElement('div');
-    btnContainer.style.display = 'flex';
-    btnContainer.style.gap = '20px';
-    overlay.appendChild(btnContainer);
+        const btnContainer = document.createElement('div');
+        btnContainer.style.display = 'flex';
+        btnContainer.style.gap = '20px';
+        overlay.appendChild(btnContainer);
 
-    const spBtn = document.createElement('button');
-    spBtn.textContent = 'Singleplayer';
-    btnContainer.appendChild(spBtn);
+        const spBtn = document.createElement('button');
+        spBtn.textContent = 'Singleplayer';
+        btnContainer.appendChild(spBtn);
 
-    const mpBtn = document.createElement('button');
-    mpBtn.textContent = 'Multiplayer';
-    btnContainer.appendChild(mpBtn);
+        const mpBtn = document.createElement('button');
+        mpBtn.textContent = 'Multiplayer';
+        btnContainer.appendChild(mpBtn);
 
-    document.body.appendChild(overlay);
+        document.body.appendChild(overlay);
 
-    // Button actions
-    spBtn.addEventListener('click', () => {
-        overlay.remove();
-        startGame.call(this);
+        // Button actions
+        spBtn.addEventListener('click', () => {
+            overlay.remove();
+            startGame.call(this);
+        });
+
+        mpBtn.addEventListener('click', async () => {
+            overlay.remove();
+
+            try {
+                await enterMultiplayerQueue.call(this);
+                console.log("Starting multiplayer game");
+                startGame.call(this); // starts timer and allows update loop
+            } catch (err) {
+                console.error("Error entering queue:", err);
+            }
+        });
+
     });
-
-    mpBtn.addEventListener('click', async () => {
-    overlay.remove();
-    
-    try {
-        await enterMultiplayerQueue.call(this);
-        console.log("Starting multiplayer game");
-        startGame.call(this); // starts timer and allows update loop
-    } catch (err) {
-        console.error("Error entering queue:", err);
-    }
-});
-
-});
 
 }
 
