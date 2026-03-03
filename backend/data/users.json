@@ -2,5 +2,13 @@
   {
     "login": "steve",
     "password": "steve1"
+  },
+  {
+    "login": "steve2",
+    "password": "steve2"
+  },
+  {
+    "login": "steve1",
+    "password": "test1"
   }
 ]

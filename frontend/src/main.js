@@ -32,8 +32,9 @@ function preload() {
 
 function create() {
 
-    this.scene.pause(); // pause everything in this scene until we get the player's name
     console.log("Phaser create called");
+
+    this.gameStarted = false;
 
     this.add.image(0, 0, 'bg')
         .setOrigin(0, 0)
@@ -125,23 +126,7 @@ function create() {
     );
 
     /* TIMER */
-    this.timerEvent = this.time.addEvent({
-        delay: 1000,
-        loop: true,
-        callback: () => {
-            if (this.roundEnded) return;
 
-            this.remainingTime--;
-            this.timerText.setText("Time: " + this.remainingTime);
-
-            // Update the arcade-style running score every second
-            updateRunningScore.call(this);
-
-            if (this.remainingTime <= 0) {
-                endRound.call(this);
-            }
-        }
-    });
 
     /* ROUND END UI */
 
@@ -180,8 +165,6 @@ function create() {
         .catch(err => console.error("Could not fetch level:", err));
 
     /* PLAYER INPUT (START SCREEN) */
-
-    this.scene.pause(); // pause the game until login
 
  showLogin(async (playerId) => {
     this.playerId = playerId;
@@ -224,18 +207,28 @@ function create() {
     // Button actions
     spBtn.addEventListener('click', () => {
         overlay.remove();
-        this.scene.resume(); // normal singleplayer flow
+        startGame.call(this);
     });
 
     mpBtn.addEventListener('click', async () => {
-        overlay.remove();
-        await enterMultiplayerQueue.call(this); // call async queue function
-    });
+    overlay.remove();
+    
+    try {
+        await enterMultiplayerQueue.call(this);
+        console.log("Starting multiplayer game");
+        startGame.call(this); // starts timer and allows update loop
+    } catch (err) {
+        console.error("Error entering queue:", err);
+    }
+});
+
 });
 
 }
 
 function update() {
+
+    if (!this.gameStarted) return;
 
     if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
         if (this.roundEnded) {
@@ -450,33 +443,64 @@ function showLogin(onLogin) {
 }
 
 async function enterMultiplayerQueue() {
-    try {
-        const response = await fetch('http://localhost:3000/api/join-queue', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playerId: this.playerId })
-        });
-        const data = await response.json();
+    return new Promise(async (resolve, reject) => {
+        try {
+            // join queue
+            const response = await fetch('http://localhost:3000/api/join-queue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playerId: this.playerId })
+            });
+            const data = await response.json();
 
-        if (data.matched) {
-            console.log("Match found with:", data.players);
-            this.scene.resume(); // resume game immediately
-        } else {
-            console.log("Waiting for another player...");
-            // poll the server until matched
-            const pollInterval = setInterval(async () => {
-                const res = await fetch(`http://localhost:3000/api/queue-status?playerId=${this.playerId}`);
-                const status = await res.json();
-                if (status.matched) {
-                    console.log("Match found via polling:", status.players);
-                    clearInterval(pollInterval);
-                    this.scene.resume();
-                }
-            }, 2000);
+            if (data.matched) {
+                console.log("Match found immediately with:", data.players);
+                resolve(); // start the game
+            } else {
+                console.log("Waiting for another player...");
+                const pollInterval = setInterval(async () => {
+                    try {
+                        const res = await fetch(`http://localhost:3000/api/queue-status?playerId=${this.playerId}`);
+                        const status = await res.json();
+                        if (status.matched) {
+                            console.log("Match found via polling");
+                            clearInterval(pollInterval);
+                            resolve(); // start the game
+                        }
+                    } catch (err) {
+                        clearInterval(pollInterval);
+                        reject(err);
+                    }
+                }, 2000);
+            }
+        } catch (err) {
+            reject(err);
         }
-    } catch (err) {
-        console.error("Queue error:", err);
-    }
+    });
+}
+/* -----------------------
+Start game function (called after mode selection)
+----------------------- */
+
+function startGame() {
+    this.gameStarted = true;
+
+    this.timerEvent = this.time.addEvent({
+        delay: 1000,
+        loop: true,
+        callback: () => {
+            if (this.roundEnded) return;
+
+            this.remainingTime--;
+            this.timerText.setText("Time: " + this.remainingTime);
+
+            updateRunningScore.call(this);
+
+            if (this.remainingTime <= 0) {
+                endRound.call(this);
+            }
+        }
+    });
 }
 
 /* -----------------------
