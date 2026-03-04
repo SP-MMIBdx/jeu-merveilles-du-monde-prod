@@ -36,9 +36,17 @@ function create() {
 
     this.gameStarted = false;
 
+    // Background
+
     this.add.image(0, 0, 'bg')
         .setOrigin(0, 0)
         .setDisplaySize(this.scale.width, this.scale.height);
+
+    // Set world bounds larger than the viewport for horizontal scrolling
+    const worldWidth = 5000;
+
+    this.physics.world.setBounds(0, 0, worldWidth, 400);
+    this.cameras.main.setBounds(0, 0, worldWidth, 400);
 
     /* STATE */
     this.roundEnded = false;
