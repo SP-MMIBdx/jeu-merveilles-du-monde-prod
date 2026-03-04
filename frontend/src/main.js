@@ -129,7 +129,7 @@ function create() {
     );
 
     /* FINISH LINE */
-    const finish = this.add.rectangle(750, 350, 20, 80, 0x00ff00);
+    const finish = this.add.rectangle(worldWidth - 50, 250, 20, 200, 0x00ff00); // invisible finish line
     this.physics.add.existing(finish, true); 
     this.finish = finish; // store reference for later use
     this.finish.setVisible(true); // make finish visible for testing
