@@ -27,7 +27,7 @@ Phaser Scene
 ----------------------- */
 
 function preload() {
-    this.load.image('bg', 'assets/img/fondjeu.png');
+    this.load.image('bg', 'assets/img/Background.png');
     this.load.image('biscuit', 'assets/img/biscuit.png');
 
     // Lion frames
@@ -53,7 +53,7 @@ function create() {
     // Add image at top-left
     this.background = this.add.image(0, 0, 'bg')
         .setOrigin(0, 0)
-        .setScrollFactor(0);
+        .setScrollFactor(1); // background scrolls with camera
 
     // Scale vertically to fill viewport
     this.background.displayHeight = this.scale.height;
@@ -316,11 +316,6 @@ function update() {
             return;
         }
         endRound.call(this);
-    }
-
-    if (this.gameStarted) {
-        // scroll slower than camera for parallax effect
-        this.background.tilePositionX = this.cameras.main.scrollX * 0.5;
     }
 
     if (this.roundEnded) return;
