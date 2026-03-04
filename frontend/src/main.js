@@ -28,6 +28,7 @@ Phaser Scene
 
 function preload() {
     this.load.image('bg', 'assets/img/fondjeu.png');
+    this.load.image('biscuit', 'assets/img/biscuit.png');
 }
 
 function create() {
