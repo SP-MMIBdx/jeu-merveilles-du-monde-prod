@@ -40,18 +40,18 @@ function create() {
     // Set world bounds larger than the viewport for horizontal scrolling
     const worldWidth = 5000;
 
-       // Background
-const bgTexture = this.textures.get('bg').getSourceImage();
+    // Background
+    const bgTexture = this.textures.get('bg').getSourceImage();
 
-// Add image at top-left
-this.background = this.add.image(0, 0, 'bg')
-    .setOrigin(0, 0)
-    .setScrollFactor(0);
+    // Add image at top-left
+    this.background = this.add.image(0, 0, 'bg')
+        .setOrigin(0, 0)
+        .setScrollFactor(0);
 
-// Scale vertically to fill viewport
-this.background.displayHeight = this.scale.height;
-this.background.scaleX = this.background.scaleY; // maintain aspect ratio
-// Set world bounds for physics and camera
+    // Scale vertically to fill viewport
+    this.background.displayHeight = this.scale.height;
+    this.background.scaleX = this.background.scaleY; // maintain aspect ratio
+    // Set world bounds for physics and camera
     this.physics.world.setBounds(0, 0, worldWidth, 400);
     this.cameras.main.setBounds(0, 0, worldWidth, 400);
 
@@ -139,7 +139,7 @@ this.background.scaleX = this.background.scaleY; // maintain aspect ratio
 
     /* FINISH LINE */
     const finish = this.add.rectangle(worldWidth - 50, 250, 20, 200, 0x00ff00); // invisible finish line
-    this.physics.add.existing(finish, true); 
+    this.physics.add.existing(finish, true);
     this.finish = finish; // store reference for later use
     this.finish.setVisible(true); // make finish visible for testing
 
@@ -265,9 +265,9 @@ function update() {
     }
 
     if (this.gameStarted) {
-    // scroll slower than camera for parallax effect
-    this.background.tilePositionX = this.cameras.main.scrollX * 0.5;
-}
+        // scroll slower than camera for parallax effect
+        this.background.tilePositionX = this.cameras.main.scrollX * 0.5;
+    }
 
     if (this.roundEnded) return;
 
