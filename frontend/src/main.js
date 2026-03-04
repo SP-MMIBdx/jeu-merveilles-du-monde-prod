@@ -110,43 +110,43 @@ function create() {
     // Collisions with ground
     this.physics.add.collider(this.player, this.ground);
 
-/* BISCUITS */
-this.biscuits = this.physics.add.group();
+    /* BISCUITS */
+    this.biscuits = this.physics.add.group();
 
-// Fill level with biscuits up to the finish line
-const biscuitSpacingX = 200; // horizontal spacing
-const biscuitSize = 20;      // visual size
+    // Fill level with biscuits up to the finish line
+    const biscuitSpacingX = 200; // horizontal spacing
+    const biscuitSize = 20;      // visual size
 
-for (let x = 100; x < worldWidth - 50; x += biscuitSpacingX) {
-    const y = Phaser.Math.Between(50, 150); // spawn above ground
+    for (let x = 100; x < worldWidth - 50; x += biscuitSpacingX) {
+        const y = Phaser.Math.Between(50, 150); // spawn above ground
 
-    // Create physics-enabled sprite directly
-    const biscuit = this.physics.add.sprite(x, y, 'biscuit');
+        // Create physics-enabled sprite directly
+        const biscuit = this.physics.add.sprite(x, y, 'biscuit');
 
-    // Resize to match desired size
-    const scaleX = biscuitSize / biscuit.width;
-    const scaleY = biscuitSize / biscuit.height;
-    biscuit.setScale(scaleX, scaleY);
+        // Resize to match desired size
+        const scaleX = biscuitSize / biscuit.width;
+        const scaleY = biscuitSize / biscuit.height;
+        biscuit.setScale(scaleX, scaleY);
 
-    // Make it affected by gravity
-    biscuit.body.setAllowGravity(true);
-    biscuit.body.setImmovable(false);
+        // Make it affected by gravity
+        biscuit.body.setAllowGravity(true);
+        biscuit.body.setImmovable(false);
 
-    // Add to group
-    this.biscuits.add(biscuit);
-}
+        // Add to group
+        this.biscuits.add(biscuit);
+    }
 
-// Collisions with ground
-this.physics.add.collider(this.biscuits, this.ground);
+    // Collisions with ground
+    this.physics.add.collider(this.biscuits, this.ground);
 
-// Player overlaps biscuits
-this.physics.add.overlap(
-    this.player,
-    this.biscuits,
-    collectBiscuit,
-    null,
-    this
-);
+    // Player overlaps biscuits
+    this.physics.add.overlap(
+        this.player,
+        this.biscuits,
+        collectBiscuit,
+        null,
+        this
+    );
 
     /* FINISH LINE */
     const finish = this.add.rectangle(worldWidth - 50, 250, 20, 200, 0x00ff00); // invisible finish line
@@ -295,8 +295,8 @@ function update() {
     }
 
     this.biscuits.getChildren().forEach(b => {
-    if (b.updateSprite) b.updateSprite();
-});
+        if (b.updateSprite) b.updateSprite();
+    });
 }
 
 
