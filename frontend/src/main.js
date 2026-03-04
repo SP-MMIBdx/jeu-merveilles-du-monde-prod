@@ -59,7 +59,7 @@ function create() {
     /* STATE */
     this.roundEnded = false;
     this.score = 0;
-    this.remainingTime = 30;
+    this.remainingTime = 120; // 120 seconds per round
 
     /* INPUT */
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -150,9 +150,6 @@ function create() {
         null,
         this
     );
-
-    /* TIMER */
-
 
     /* ROUND END UI */
 
