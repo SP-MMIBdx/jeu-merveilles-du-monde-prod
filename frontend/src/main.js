@@ -156,7 +156,8 @@ function create() {
 
     /* ROUND END UI */
 
-    this.roundEndUI = this.add.container(400, 200).setVisible(false);
+    this.roundEndUI = this.add.container(400, 200).setVisible(false); // center of screen
+    this.roundEndUI.setScrollFactor(0); // Fix to camera
 
     const panel = this.add.rectangle(0, 0, 300, 180, 0x222222, 0.9);
     this.roundEndUI.add(panel);
