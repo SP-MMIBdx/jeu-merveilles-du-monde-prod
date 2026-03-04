@@ -87,10 +87,15 @@ function create() {
     this.physics.add.existing(this.ground, true);
     this.ground.setVisible(false);
 
+    /* PLAYER */
     this.player = this.add.rectangle(100, 200, 30, 30, 0xff0000);
     this.physics.add.existing(this.player);
     this.player.body.setCollideWorldBounds(true);
 
+    // Camera follows player
+    this.cameras.main.startFollow(this.player);
+
+    // Collisions with ground
     this.physics.add.collider(this.player, this.ground);
 
     /* BISCUITS */
