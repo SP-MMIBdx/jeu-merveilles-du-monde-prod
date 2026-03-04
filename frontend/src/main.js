@@ -83,7 +83,9 @@ function create() {
 
     this.hud.add(this.timerText);
     /* WORLD */
-    this.ground = this.add.rectangle(400, 380, 800, 105, 0x666666);
+
+    // Ground (invisible, for collisions)
+    this.ground = this.add.rectangle(worldWidth / 2, 380, worldWidth, 105, 0x666666);
     this.physics.add.existing(this.ground, true);
     this.ground.setVisible(false);
 
