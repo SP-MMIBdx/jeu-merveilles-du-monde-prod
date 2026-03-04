@@ -34,19 +34,25 @@ function create() {
 
     console.log("Phaser create called");
 
+    // Game not started until player logs in and chooses mode
     this.gameStarted = false;
-
-    // Background
-
-    this.add.image(0, 0, 'bg')
-        .setOrigin(0, 0)
-        .setDisplaySize(this.scale.width, this.scale.height);
 
     // Set world bounds larger than the viewport for horizontal scrolling
     const worldWidth = 5000;
 
+       // Background
+this.background = this.add.tileSprite(
+    0,
+    0,
+    this.scale.width,   // only viewport width
+    this.scale.height,
+    'bg'
+).setOrigin(0, 0).setScrollFactor(0);
+
+// Set world bounds for physics and camera
     this.physics.world.setBounds(0, 0, worldWidth, 400);
     this.cameras.main.setBounds(0, 0, worldWidth, 400);
+
 
     /* STATE */
     this.roundEnded = false;
@@ -61,6 +67,7 @@ function create() {
 
     // UI Container:
     this.hud = this.add.container(20, 20); // top-left corner
+    this.hud.setScrollFactor(0); // UI should not scroll with the world
 
     // Create texts
     this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#000000' });
@@ -254,6 +261,11 @@ function update() {
         }
         endRound.call(this);
     }
+
+    if (this.gameStarted) {
+    // scroll slower than camera for parallax effect
+    this.background.tilePositionX = this.cameras.main.scrollX * 0.5;
+}
 
     if (this.roundEnded) return;
 
