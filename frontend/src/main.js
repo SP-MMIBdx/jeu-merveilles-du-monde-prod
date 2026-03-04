@@ -41,14 +41,16 @@ function create() {
     const worldWidth = 5000;
 
        // Background
-this.background = this.add.tileSprite(
-    0,
-    0,
-    this.scale.width,   // only viewport width
-    this.scale.height,
-    'bg'
-).setOrigin(0, 0).setScrollFactor(0);
+const bgTexture = this.textures.get('bg').getSourceImage();
 
+// Add image at top-left
+this.background = this.add.image(0, 0, 'bg')
+    .setOrigin(0, 0)
+    .setScrollFactor(0);
+
+// Scale vertically to fill viewport
+this.background.displayHeight = this.scale.height;
+this.background.scaleX = this.background.scaleY; // maintain aspect ratio
 // Set world bounds for physics and camera
     this.physics.world.setBounds(0, 0, worldWidth, 400);
     this.cameras.main.setBounds(0, 0, worldWidth, 400);
