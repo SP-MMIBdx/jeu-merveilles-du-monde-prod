@@ -112,18 +112,16 @@ function create() {
     /* BISCUITS */
     this.biscuits = this.physics.add.group();
 
-    // Spawn 5 biscuits at random x positions
-    for (let i = 0; i < 5; i++) {
-        const biscuit = this.add.rectangle(
-            Phaser.Math.Between(50, 750), // random x
-            Phaser.Math.Between(0, 50),   // random y near top
-            20, 20,
-            0xffff00
-        );
+// Fill level with biscuits up to the finish line
+const biscuitSpacingX = 200; // horizontal spacing between biscuit columns
+const biscuitSize = 20;
 
-        this.physics.add.existing(biscuit);
-        this.biscuits.add(biscuit);
-    }
+for (let x = 100; x < worldWidth - 50; x += biscuitSpacingX) {
+    const y = Phaser.Math.Between(50, 300); // vertical random position
+    const biscuit = this.add.rectangle(x, y, biscuitSize, biscuitSize, 0xffff00);
+    this.physics.add.existing(biscuit);
+    this.biscuits.add(biscuit);
+}
 
     // Collisions with ground
     this.physics.add.collider(this.biscuits, this.ground);
