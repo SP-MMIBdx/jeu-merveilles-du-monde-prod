@@ -29,6 +29,12 @@ Phaser Scene
 function preload() {
     this.load.image('bg', 'assets/img/fondjeu.png');
     this.load.image('biscuit', 'assets/img/biscuit.png');
+
+    // Lion frames
+    for (let i = 1; i <= 5; i++) {
+        this.load.image(`LionRight${i}`, `assets/img/LionRight${i}.png`);
+        this.load.image(`LionLeft${i}`, `assets/img/LionLeft${i}.png`);
+    }
 }
 
 function create() {
@@ -99,10 +105,49 @@ function create() {
     this.physics.add.existing(this.ground, true);
     this.ground.setVisible(false);
 
-    /* PLAYER */
-    this.player = this.add.rectangle(100, 200, 30, 30, 0xff0000);
-    this.physics.add.existing(this.player);
-    this.player.body.setCollideWorldBounds(true);
+    /* PLAYER/LION */
+    this.player = this.physics.add.sprite(100, 200, 'LionRight1');
+    this.player.setCollideWorldBounds(true);
+    this.player.setScale(0.2); // lion sizing
+
+    // Shrink hitbox
+this.player.body.setSize(
+    this.player.width * 0.5,
+    this.player.height * 0.35,
+);
+
+// Move hitbox down so feet touch ground
+this.player.body.setOffset(
+    this.player.width * 0.25,
+    this.player.height * 0.4
+);
+
+    // Create animations (using static images for simplicity)
+    this.anims.create({
+        key: 'run_left',
+        frames: [
+            { key: 'LionLeft1' },
+            { key: 'LionLeft2' },
+            { key: 'LionLeft3' },
+            { key: 'LionLeft4' },
+            { key: 'LionLeft5' }
+        ],
+        frameRate: 8,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'run_right',
+        frames: [
+            { key: 'LionRight1' },
+            { key: 'LionRight2' },
+            { key: 'LionRight3' },
+            { key: 'LionRight4' },
+            { key: 'LionRight5' }
+        ],
+        frameRate: 8,
+        repeat: -1
+    });
 
     // Camera follows player
     this.cameras.main.startFollow(this.player);
@@ -281,13 +326,30 @@ function update() {
     if (this.roundEnded) return;
 
     if (this.cursors.left.isDown) {
-        this.player.body.setVelocityX(-160);
+
+        this.player.setVelocityX(-160);
+
+        if (this.player.body.touching.down) {
+            this.player.anims.play('run_left', true);
+        }
+
     }
     else if (this.cursors.right.isDown) {
-        this.player.body.setVelocityX(160);
+
+        this.player.setVelocityX(160);
+
+        if (this.player.body.touching.down) {
+            this.player.anims.play('run_right', true);
+        }
+
     }
     else {
-        this.player.body.setVelocityX(0);
+
+        this.player.setVelocityX(0);
+
+        if (this.player.body.touching.down) {
+            this.player.anims.stop();
+        }
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
@@ -582,7 +644,10 @@ const config = {
     height: 400,
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 600 } }
+        arcade: {
+            gravity: { y: 600 },
+            debug: true
+        }
     },
     scene: { preload, create, update },
     parent: 'app'
