@@ -115,7 +115,7 @@ function create() {
 
     // Fill level with biscuits up to the finish line
     const biscuitSpacingX = 200; // horizontal spacing
-    const biscuitSize = 40;      // visual size of biscuits
+    const biscuitSize = 35;      // visual size of biscuits
 
     for (let x = 100; x < worldWidth - 50; x += biscuitSpacingX) {
         const y = Phaser.Math.Between(50, 150); // spawn above ground
