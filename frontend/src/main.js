@@ -128,9 +128,11 @@ function create() {
         this
     );
 
-    /* FINISH */
+    /* FINISH LINE */
     const finish = this.add.rectangle(750, 350, 20, 80, 0x00ff00);
-    this.physics.add.existing(finish, true);
+    this.physics.add.existing(finish, true); 
+    this.finish = finish; // store reference for later use
+    this.finish.setVisible(true); // make finish visible for testing
 
     this.physics.add.overlap(
         this.player,
