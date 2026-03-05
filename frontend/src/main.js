@@ -155,6 +155,28 @@ this.player.body.setOffset(
         frameRate: 8,
         repeat: -1
     });
+    
+    // Rat animations
+
+    this.anims.create({
+    key: 'rat_right',
+    frames: [
+        { key: 'RatRight1' },
+        { key: 'RatRight2' }
+    ],
+    frameRate: 4,
+    repeat: -1
+});
+
+this.anims.create({
+    key: 'rat_left',
+    frames: [
+        { key: 'RatLeft1' },
+        { key: 'RatLeft2' }
+    ],
+    frameRate: 4,
+    repeat: -1
+});
 
     // Camera follows player
     this.cameras.main.startFollow(this.player);
