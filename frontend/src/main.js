@@ -74,7 +74,7 @@ function create() {
     this.roundEnded = false;
     this.score = 0; // number of biscuits collected
     this.remainingTime = 120; // 120 seconds per round
-    this.playerHealth = 3; // number of hits the player can take
+    this.playerHealth = 10; // number of hits the player can take
 
     /* INPUT */
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -366,12 +366,25 @@ function create() {
 }
 
 function onPlayerHitRat(player, rat) {
-    console.log("Player hit a rat!");
+    if (this.roundEnded) return; // don't process if round over
 
-    // Temporary placeholder reaction:
-    // Stop the player when hitting a rat
-    player.setVelocityX(0);
-    player.setVelocityY(-150); // bounce back slightly
+    // Reduce health
+    this.playerHealth--;
+
+    // Update UI
+    this.healthText.setText("Health: " + this.playerHealth);
+
+    // Optional: brief invincibility or knockback
+    player.setVelocityY(-150); // bounce up slightly
+    player.setTint(0xff0000);
+    this.time.delayedCall(200, () => {
+        player.clearTint();
+    });
+
+    // Check for death
+    if (this.playerHealth <= 0) {
+        endRound.call(this);
+    }
 }
 
 function update() {
