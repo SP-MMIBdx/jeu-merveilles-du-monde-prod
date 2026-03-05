@@ -302,22 +302,22 @@ function create() {
             this.levelText.setText(data.message);
         })
         .catch(err => console.error("Could not fetch level:", err));
-    
-// -----------------------
-// LOGIN / AUTO-LOGIN
-// -----------------------
-const savedPlayerId = localStorage.getItem('playerId');
 
-if (savedPlayerId) {
-    console.log("Auto-login with playerId:", savedPlayerId);
-    this.playerId = savedPlayerId;
-    showModeSelection.call(this); // go straight to mode selection
-} else {
-    showLogin((playerId) => {
-        this.playerId = playerId;
-        showModeSelection.call(this);
-    });
-}
+    // -----------------------
+    // LOGIN / AUTO-LOGIN
+    // -----------------------
+    const savedPlayerId = localStorage.getItem('playerId');
+
+    if (savedPlayerId) {
+        console.log("Auto-login with playerId:", savedPlayerId);
+        this.playerId = savedPlayerId;
+        showModeSelection.call(this); // go straight to mode selection
+    } else {
+        showLogin((playerId) => {
+            this.playerId = playerId;
+            showModeSelection.call(this);
+        });
+    }
 }
 
 function onPlayerHitRat(player, rat) {
@@ -677,6 +677,7 @@ function showModeSelection() {
     });
 }
 
+// Multiplayer queue logic
 async function enterMultiplayerQueue() {
     return new Promise(async (resolve, reject) => {
         let waitMsg;
