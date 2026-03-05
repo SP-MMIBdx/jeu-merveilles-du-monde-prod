@@ -302,6 +302,22 @@ function create() {
             this.levelText.setText(data.message);
         })
         .catch(err => console.error("Could not fetch level:", err));
+    
+    // Check for saved playerId in localStorage for auto-login
+    const savedPlayerId = localStorage.getItem('playerId');
+if (savedPlayerId) {
+    console.log("Auto-login with playerId:", savedPlayerId);
+    showLoginCallback(savedPlayerId);
+} else {
+    // Show login overlay
+    showLogin((playerId) => {
+        this.playerId = playerId;
+        
+
+        // Continue with game setup...
+        showModeSelection.call(this);
+    });
+}
 
     /* PLAYER INPUT (START SCREEN) */
 
