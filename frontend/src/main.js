@@ -8,9 +8,13 @@ DOM (Vite template)
 
 const app = document.querySelector('#app');
 
-const title = document.createElement('h1');
-title.textContent = "Merveilles du Monde";
-app.appendChild(title);
+// Add the logo instead
+const logo = document.createElement('img');
+logo.src = "assets/img/Logo.png";  // path to logo
+logo.alt = "Merveilles du Monde";
+logo.id = "logo";                  // optional for styling
+
+app.appendChild(logo);
 
 const card = document.createElement('div');
 card.classList.add('card');
