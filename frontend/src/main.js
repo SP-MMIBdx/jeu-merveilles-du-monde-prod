@@ -35,6 +35,13 @@ function preload() {
         this.load.image(`LionRight${i}`, `assets/img/LionRight${i}.png`);
         this.load.image(`LionLeft${i}`, `assets/img/LionLeft${i}.png`);
     }
+
+    //Rat frames
+
+    for (let i = 1; i <= 2; i++) {
+    this.load.image(`RatRight${i}`, `assets/img/RatRight${i}.png`);
+    this.load.image(`RatLeft${i}`, `assets/img/RatLeft${i}.png`);
+}
 }
 
 function create() {
