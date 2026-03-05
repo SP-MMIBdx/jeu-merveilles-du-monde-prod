@@ -72,8 +72,9 @@ function create() {
 
     /* STATE */
     this.roundEnded = false;
-    this.score = 0;
+    this.score = 0; // number of biscuits collected
     this.remainingTime = 120; // 120 seconds per round
+    this.playerHealth = 3; // number of hits the player can take
 
     /* INPUT */
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -89,22 +90,18 @@ function create() {
     this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#000000' });
     this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#000000' });
     this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#000000' });
-
-    // Add texts to HUD container
-    [this.levelText, this.scoreText, this.timerText].forEach(txt => this.hud.add(txt));
-
-    // After levelText, scoreText, timerText
+    this.healthText = this.add.text(0, 0, "Health: " + this.playerHealth, { fontSize: '20px', color: '#ff0000' });
     this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#000000' });
-    this.hud.add(this.runningScoreText);
+
+    // Add all HUD elements to container at once
+    [this.levelText, this.scoreText, this.timerText, this.healthText, this.runningScoreText].forEach(txt => this.hud.add(txt));
 
     // Stack them vertically
     let offsetY = 0;
-    [this.levelText, this.scoreText, this.timerText, this.runningScoreText].forEach(txt => {
+    [this.levelText, this.scoreText, this.timerText, this.healthText, this.runningScoreText].forEach(txt => {
         txt.setY(offsetY);
         offsetY += parseInt(txt.style.fontSize, 10) + 5; // spacing
     });
-
-    this.hud.add(this.timerText);
     /* WORLD */
 
     // Ground (invisible, for collisions)
@@ -252,7 +249,7 @@ function create() {
     this.physics.add.collider(this.rats, this.ground);
 
     // Player vs rats collision
-    this.physics.add.collider(this.player, this.rats, onPlayerHitRat, null, this); 
+    this.physics.add.collider(this.player, this.rats, onPlayerHitRat, null, this);
 
 
     /* FINISH LINE */
@@ -427,25 +424,25 @@ function update() {
     });
 
     this.rats.getChildren().forEach(rat => {
-    // Move rat horizontally
-    rat.setVelocityX(rat.speed * rat.direction);
+        // Move rat horizontally
+        rat.setVelocityX(rat.speed * rat.direction);
 
-    // Flip animation based on direction
-    if (rat.direction > 0) {
-        rat.anims.play('rat_right', true);
-    } else {
-        rat.anims.play('rat_left', true);
-    }
+        // Flip animation based on direction
+        if (rat.direction > 0) {
+            rat.anims.play('rat_right', true);
+        } else {
+            rat.anims.play('rat_left', true);
+        }
 
-    // Patrol bounds check
-    if (rat.x >= rat.patrolMaxX) {
-        rat.direction = -1;
-        rat.x = rat.patrolMaxX; // prevent overshoot
-    } else if (rat.x <= rat.patrolMinX) {
-        rat.direction = 1;
-        rat.x = rat.patrolMinX; // prevent overshoot
-    }
-});
+        // Patrol bounds check
+        if (rat.x >= rat.patrolMaxX) {
+            rat.direction = -1;
+            rat.x = rat.patrolMaxX; // prevent overshoot
+        } else if (rat.x <= rat.patrolMinX) {
+            rat.direction = 1;
+            rat.x = rat.patrolMinX; // prevent overshoot
+        }
+    });
 }
 
 /* -----------------------
