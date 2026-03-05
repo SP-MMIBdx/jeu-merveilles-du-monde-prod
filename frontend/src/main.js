@@ -75,7 +75,7 @@ function create() {
     /* STATE */
     this.roundEnded = false;
     this.score = 0; // number of biscuits collected
-    this.remainingTime = 120; // 120 seconds per round
+    this.remainingTime = 60; // 60 seconds per round
     this.playerHealth = 10; // number of hits the player can take
 
     /* INPUT */
@@ -111,20 +111,32 @@ this.healthText = this.add.text(this.heartIcon.width * 0.03 + 10, 0, "x" + this.
 this.healthContainer.add([this.heartIcon, this.healthText]);
 
 
-
-    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#A52A2A' });
-    
-    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#A52A2A' });
-
     // Add all HUD elements to container at once
-[this.biscuitContainer, this.healthContainer, this.runningScoreText].forEach(el => this.hud.add(el));
+[this.biscuitContainer, this.healthContainer,].forEach(el => this.hud.add(el));
 
 
 let offsetY = 0;
-[this.biscuitContainer, this.healthContainer, this.runningScoreText].forEach(el => {
+[this.biscuitContainer, this.healthContainer].forEach(el => {
     el.setY(offsetY);
     offsetY += parseInt(el.style?.fontSize || 20, 10) + 30; // spacing
 });
+
+// Timer + running score container (top-right)
+this.timerContainer = this.add.container(this.scale.width - 20, 40); // start 20px from right
+this.timerContainer.setScrollFactor(0); // fixed to camera
+
+// Timer icon (optional if you want a small clock image, can skip if not)
+this.timerIcon = this.add.image(0, 0, 'timer').setScale(0.5).setOrigin(1, 0.5); // origin right-aligned
+
+// Timer text
+this.timerText = this.add.text(-60, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
+
+// Running score text
+this.runningScoreText = this.add.text(0, 40, "Score: 0", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
+
+// Add to container
+this.timerContainer.add([this.timerIcon, this.timerText, this.runningScoreText]);
+
     /* WORLD */
 
     // Ground (invisible, for collisions)
@@ -771,7 +783,7 @@ function startGame() {
             if (this.roundEnded) return;
 
             this.remainingTime--;
-            this.timerText.setText("Time: " + this.remainingTime);
+            this.timerText.setText(this.remainingTime);
 
             updateRunningScore.call(this);
 
