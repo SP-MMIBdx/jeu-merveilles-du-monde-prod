@@ -232,7 +232,11 @@ for (let x = 600; x < worldWidth - 200; x += ratSpacing) {
 
     const rat = this.physics.add.sprite(x, 200, 'RatRight1');
 
-    rat.setScale(0.25); // bigger than biscuit
+    rat.setScale(0.10); // bigger than biscuit
+
+    rat.body.setSize(1000, 310); // smaller hitbox for better gameplay
+
+
     rat.setCollideWorldBounds(true);
 
     rat.direction = 1; // 1 = right, -1 = left
@@ -240,6 +244,10 @@ for (let x = 600; x < worldWidth - 200; x += ratSpacing) {
 
     this.rats.add(rat);
 }
+
+// Rat colisions with ground
+
+this.physics.add.collider(this.rats, this.ground);
 
 
     /* FINISH LINE */
