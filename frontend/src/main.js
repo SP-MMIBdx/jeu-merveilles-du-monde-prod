@@ -88,28 +88,42 @@ function create() {
     this.hud = this.add.container(20, 40); // top-left corner
     this.hud.setScrollFactor(0); // UI should not scroll with the world
 
-    // Create texts
 // Horizontal container for icon + number
-this.biscuitContainer = this.add.container(0, 0);
+this.biscuitContainer = this.add.container(0, 0); 
 
 this.biscuitIcon = this.add.image(0, 0, 'biscuit').setScale(0.1).setOrigin(0, 0.5); // vertically centered
 
-this.scoreText = this.add.text(this.biscuitIcon.width * 0.1 + 10, 0, "0", { fontSize: '20px', color: '#000000' }).setOrigin(0, 0.5); // number to the right of icon, vertically centered
+this.scoreText = this.add.text(this.biscuitIcon.width * 0.09 + 10, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(0, 0.5); // number to the right of icon, vertically centered
 
-this.biscuitContainer.add([this.biscuitIcon, this.scoreText]);
+this.biscuitContainer.add([this.biscuitIcon, this.scoreText]); // add both to container
 
-    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#000000' });
-    this.healthText = this.add.text(0, 0, "Health: " + this.playerHealth, { fontSize: '20px', color: '#ff0000' });
-    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#000000' });
+// Horizontal container for heart + number
+this.healthContainer = this.add.container(0, 0);
+
+// Heart icon vertically centered
+this.heartIcon = this.add.image(0, 0, 'heart').setScale(0.033).setOrigin(0, 0.5);
+
+this.healthText = this.add.text(this.heartIcon.width * 0.03 + 10, 0, "x" + this.playerHealth, { 
+    fontSize: '20px', 
+    color: '#A52A2A' 
+}).setOrigin(0, 0.5);
+
+this.healthContainer.add([this.heartIcon, this.healthText]);
+
+
+
+    this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#A52A2A' });
+    
+    this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#A52A2A' });
 
     // Add all HUD elements to container at once
-[this.biscuitContainer, this.healthText, this.runningScoreText].forEach(el => this.hud.add(el));
+[this.biscuitContainer, this.healthContainer, this.runningScoreText].forEach(el => this.hud.add(el));
 
 
 let offsetY = 0;
-[this.biscuitContainer, this.healthText, this.runningScoreText].forEach(el => {
+[this.biscuitContainer, this.healthContainer, this.runningScoreText].forEach(el => {
     el.setY(offsetY);
-    offsetY += parseInt(el.style?.fontSize || 20, 10) + 5; // spacing
+    offsetY += parseInt(el.style?.fontSize || 20, 10) + 30; // spacing
 });
     /* WORLD */
 
@@ -336,7 +350,7 @@ function onPlayerHitRat(player, rat) {
     this.playerHealth--;
 
     // Update UI
-    this.healthText.setText("Health: " + this.playerHealth);
+    this.healthText.setText("x" + this.playerHealth);
 
     // Optional: brief invincibility or knockback
     player.setVelocityY(-150); // bounce up slightly
@@ -432,7 +446,7 @@ function collectBiscuit(player, biscuit) {
 
     // Update score
     this.score++;
-    this.scoreText.setText(this.score);
+    this.scoreText.setText("x" + this.score);
     updateRunningScore.call(this);
 }
 async function endRound() {
