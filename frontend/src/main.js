@@ -295,7 +295,7 @@ function create() {
     this.roundEndUI.add(this.roundEndRestartText);
 
     /* BACKEND TEST (THIS MUST BE INSIDE CREATE) */
-    fetch('http://localhost:3000/api/hello')
+    fetch('/api/hello')
         .then(res => res.json())
         .then(data => {
             // Example: data.message = "Level 1"
@@ -521,12 +521,12 @@ function updateRunningScore() {
 }
 
 async function fetchLeaderboard() {
-    const response = await fetch('http://localhost:3000/api/scores');
+    const response = await fetch('/api/scores');
     return await response.json();
 }
 
 async function sendScore(playerId, score) {
-    await fetch('http://localhost:3000/api/score', {
+    await fetch('/api/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -620,7 +620,8 @@ function showLogin(onLogin) {
         }
 
         try {
-            const data = await postData('http://localhost:3000/api/signin', { login, password });
+            const data = await postData('/api/signin', { login, password });
+            localStorage.setItem('playerId', data.playerId); // save to localStorage
             overlay.remove();
             onLogin(data.playerId); // resume Phaser game
         } catch (err) {
@@ -638,7 +639,8 @@ function showLogin(onLogin) {
         }
 
         try {
-            const data = await postData('http://localhost:3000/api/signup', { login, password });
+            const data = await postData('/api/signup', { login, password });
+            localStorage.setItem('playerId', data.playerId); // save to localStorage
             overlay.remove();
             onLogin(data.playerId); // resume Phaser game
         } catch (err) {
@@ -668,7 +670,7 @@ async function enterMultiplayerQueue() {
             document.body.appendChild(waitMsg);
 
             // join queue
-            const response = await fetch('http://localhost:3000/api/join-queue', {
+            const response = await fetch('/api/join-queue', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId: this.playerId })
@@ -683,7 +685,7 @@ async function enterMultiplayerQueue() {
                 console.log("Waiting for another player...");
                 const pollInterval = setInterval(async () => {
                     try {
-                        const res = await fetch(`http://localhost:3000/api/queue-status?playerId=${this.playerId}`);
+                        const res = await fetch(`/api/queue-status?playerId=${this.playerId}`);
                         const status = await res.json();
                         if (status.matched) {
                             console.log("Match found via polling");
