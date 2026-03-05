@@ -39,9 +39,9 @@ function preload() {
     //Rat frames
 
     for (let i = 1; i <= 2; i++) {
-    this.load.image(`RatRight${i}`, `assets/img/RatRight${i}.png`);
-    this.load.image(`RatLeft${i}`, `assets/img/RatLeft${i}.png`);
-}
+        this.load.image(`RatRight${i}`, `assets/img/RatRight${i}.png`);
+        this.load.image(`RatLeft${i}`, `assets/img/RatLeft${i}.png`);
+    }
 }
 
 function create() {
@@ -118,16 +118,16 @@ function create() {
     this.player.setScale(0.2); // lion sizing
 
     // Shrink hitbox
-this.player.body.setSize(
-    this.player.width * 0.5,
-    this.player.height * 0.35,
-);
+    this.player.body.setSize(
+        this.player.width * 0.5,
+        this.player.height * 0.35,
+    );
 
-// Move hitbox down so feet touch ground
-this.player.body.setOffset(
-    this.player.width * 0.25,
-    this.player.height * 0.4
-);
+    // Move hitbox down so feet touch ground
+    this.player.body.setOffset(
+        this.player.width * 0.25,
+        this.player.height * 0.4
+    );
 
     // Create animations (using static images for simplicity)
     this.anims.create({
@@ -155,28 +155,28 @@ this.player.body.setOffset(
         frameRate: 8,
         repeat: -1
     });
-    
+
     // Rat animations
 
     this.anims.create({
-    key: 'rat_right',
-    frames: [
-        { key: 'RatRight1' },
-        { key: 'RatRight2' }
-    ],
-    frameRate: 4,
-    repeat: -1
-});
+        key: 'rat_right',
+        frames: [
+            { key: 'RatRight1' },
+            { key: 'RatRight2' }
+        ],
+        frameRate: 4,
+        repeat: -1
+    });
 
-this.anims.create({
-    key: 'rat_left',
-    frames: [
-        { key: 'RatLeft1' },
-        { key: 'RatLeft2' }
-    ],
-    frameRate: 4,
-    repeat: -1
-});
+    this.anims.create({
+        key: 'rat_left',
+        frames: [
+            { key: 'RatLeft1' },
+            { key: 'RatLeft2' }
+        ],
+        frameRate: 4,
+        repeat: -1
+    });
 
     // Camera follows player
     this.cameras.main.startFollow(this.player);
@@ -224,30 +224,32 @@ this.anims.create({
 
     /* RATS (ENEMIES) */
 
-this.rats = this.physics.add.group();
+    this.rats = this.physics.add.group();
 
-const ratSpacing = 700;
+    const ratSpacing = 700;
 
-for (let x = 600; x < worldWidth - 200; x += ratSpacing) {
+    for (let x = 600; x < worldWidth - 200; x += ratSpacing) {
 
-    const rat = this.physics.add.sprite(x, 200, 'RatRight1');
+        const rat = this.physics.add.sprite(x, 200, 'RatRight1');
 
-    rat.setScale(0.10); // bigger than biscuit
+        rat.setScale(0.10); // bigger than biscuit
 
-    rat.body.setSize(1000, 310); // smaller hitbox for better gameplay
+        rat.body.setSize(1000, 310); // smaller hitbox for better gameplay
 
 
-    rat.setCollideWorldBounds(true);
+        rat.setCollideWorldBounds(true);
 
-    rat.direction = 1; // 1 = right, -1 = left
-    rat.speed = 60;
+        rat.patrolMinX = x - 100; // left bound of patrol
+        rat.patrolMaxX = x + 100; // right bound of patrol
+        rat.direction = 1;         // 1 = right, -1 = left
+        rat.speed = 60;            // pixels per second
+        rat.anims.play('rat_right'); // start animation
+        this.rats.add(rat);
+    }
 
-    this.rats.add(rat);
-}
+    // Rat colisions with ground
 
-// Rat colisions with ground
-
-this.physics.add.collider(this.rats, this.ground);
+    this.physics.add.collider(this.rats, this.ground);
 
 
     /* FINISH LINE */
