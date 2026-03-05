@@ -29,6 +29,8 @@ Phaser Scene
 function preload() {
     this.load.image('bg', 'assets/img/Background.png');
     this.load.image('biscuit', 'assets/img/biscuit.png');
+    this.load.image('heart', 'assets/img/heart.png');
+    this.load.image('timer', 'assets/img/timer.png');
 
     // Lion frames
     for (let i = 1; i <= 5; i++) {
@@ -83,25 +85,32 @@ function create() {
     );
 
     // UI Container:
-    this.hud = this.add.container(20, 20); // top-left corner
+    this.hud = this.add.container(20, 40); // top-left corner
     this.hud.setScrollFactor(0); // UI should not scroll with the world
 
     // Create texts
-    this.levelText = this.add.text(0, 0, "Level ?", { fontSize: '20px', color: '#000000' });
-    this.scoreText = this.add.text(0, 0, "Biscuits: 0", { fontSize: '20px', color: '#000000' });
+// Horizontal container for icon + number
+this.biscuitContainer = this.add.container(0, 0);
+
+this.biscuitIcon = this.add.image(0, 0, 'biscuit').setScale(0.1).setOrigin(0, 0.5); // vertically centered
+
+this.scoreText = this.add.text(this.biscuitIcon.width * 0.1 + 10, 0, "0", { fontSize: '20px', color: '#000000' }).setOrigin(0, 0.5); // number to the right of icon, vertically centered
+
+this.biscuitContainer.add([this.biscuitIcon, this.scoreText]);
+
     this.timerText = this.add.text(0, 0, "Time:", { fontSize: '20px', color: '#000000' });
     this.healthText = this.add.text(0, 0, "Health: " + this.playerHealth, { fontSize: '20px', color: '#ff0000' });
     this.runningScoreText = this.add.text(0, 0, "Score: 0", { fontSize: '20px', color: '#000000' });
 
     // Add all HUD elements to container at once
-    [this.levelText, this.scoreText, this.timerText, this.healthText, this.runningScoreText].forEach(txt => this.hud.add(txt));
+[this.biscuitContainer, this.healthText, this.runningScoreText].forEach(el => this.hud.add(el));
 
-    // Stack them vertically
-    let offsetY = 0;
-    [this.levelText, this.scoreText, this.timerText, this.healthText, this.runningScoreText].forEach(txt => {
-        txt.setY(offsetY);
-        offsetY += parseInt(txt.style.fontSize, 10) + 5; // spacing
-    });
+
+let offsetY = 0;
+[this.biscuitContainer, this.healthText, this.runningScoreText].forEach(el => {
+    el.setY(offsetY);
+    offsetY += parseInt(el.style?.fontSize || 20, 10) + 5; // spacing
+});
     /* WORLD */
 
     // Ground (invisible, for collisions)
@@ -423,7 +432,7 @@ function collectBiscuit(player, biscuit) {
 
     // Update score
     this.score++;
-    this.scoreText.setText("Biscuits: " + this.score);
+    this.scoreText.setText(this.score);
     updateRunningScore.call(this);
 }
 async function endRound() {
