@@ -234,7 +234,7 @@ function create() {
 
         rat.setScale(0.10); // bigger than biscuit
 
-        rat.body.setSize(1000, 310); // smaller hitbox for better gameplay
+        rat.body.setSize(750, 310); // smaller hitbox for better gameplay
 
 
         rat.setCollideWorldBounds(true);
@@ -435,8 +435,6 @@ function update() {
     }
 });
 }
-
-
 
 /* -----------------------
 GAME LOGIC
