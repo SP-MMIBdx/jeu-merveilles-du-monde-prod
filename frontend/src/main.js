@@ -413,6 +413,27 @@ function update() {
     this.biscuits.getChildren().forEach(b => {
         if (b.updateSprite) b.updateSprite();
     });
+
+    this.rats.getChildren().forEach(rat => {
+    // Move rat horizontally
+    rat.setVelocityX(rat.speed * rat.direction);
+
+    // Flip animation based on direction
+    if (rat.direction > 0) {
+        rat.anims.play('rat_right', true);
+    } else {
+        rat.anims.play('rat_left', true);
+    }
+
+    // Patrol bounds check
+    if (rat.x >= rat.patrolMaxX) {
+        rat.direction = -1;
+        rat.x = rat.patrolMaxX; // prevent overshoot
+    } else if (rat.x <= rat.patrolMinX) {
+        rat.direction = 1;
+        rat.x = rat.patrolMinX; // prevent overshoot
+    }
+});
 }
 
 
