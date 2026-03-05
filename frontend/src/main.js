@@ -251,6 +251,9 @@ function create() {
 
     this.physics.add.collider(this.rats, this.ground);
 
+    // Player vs rats collision
+    this.physics.add.collider(this.player, this.rats, onPlayerHitRat, null, this); 
+
 
     /* FINISH LINE */
     const finish = this.add.rectangle(worldWidth - 0.1, 250, 20, 200, 0x00ff00); // invisible finish line
@@ -365,6 +368,15 @@ function create() {
 
 }
 
+function onPlayerHitRat(player, rat) {
+    console.log("Player hit a rat!");
+
+    // Temporary placeholder reaction:
+    // Stop the player when hitting a rat
+    player.setVelocityX(0);
+    player.setVelocityY(-150); // bounce back slightly
+}
+
 function update() {
 
     if (!this.gameStarted) return;
@@ -407,7 +419,7 @@ function update() {
     }
 
     if (this.cursors.up.isDown && this.player.body.touching.down) {
-        this.player.body.setVelocityY(-350);
+        this.player.body.setVelocityY(-450); // jump velocity
     }
 
     this.biscuits.getChildren().forEach(b => {
