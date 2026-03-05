@@ -222,11 +222,31 @@ this.anims.create({
         this
     );
 
+    /* RATS (ENEMIES) */
+
+this.rats = this.physics.add.group();
+
+const ratSpacing = 700;
+
+for (let x = 600; x < worldWidth - 200; x += ratSpacing) {
+
+    const rat = this.physics.add.sprite(x, 200, 'RatRight1');
+
+    rat.setScale(0.25); // bigger than biscuit
+    rat.setCollideWorldBounds(true);
+
+    rat.direction = 1; // 1 = right, -1 = left
+    rat.speed = 60;
+
+    this.rats.add(rat);
+}
+
+
     /* FINISH LINE */
-    const finish = this.add.rectangle(worldWidth - 50, 250, 20, 200, 0x00ff00); // invisible finish line
+    const finish = this.add.rectangle(worldWidth - 0.1, 250, 20, 200, 0x00ff00); // invisible finish line
     this.physics.add.existing(finish, true);
     this.finish = finish; // store reference for later use
-    this.finish.setVisible(true); // make finish visible for testing
+    this.finish.setVisible(false); // make finish visible for testing
 
     this.physics.add.overlap(
         this.player,
