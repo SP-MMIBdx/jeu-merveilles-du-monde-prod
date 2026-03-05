@@ -303,68 +303,21 @@ function create() {
         })
         .catch(err => console.error("Could not fetch level:", err));
     
+// -----------------------
+// LOGIN / AUTO-LOGIN
+// -----------------------
+const savedPlayerId = localStorage.getItem('playerId');
 
-
-    /* PLAYER INPUT (START SCREEN) */
-
-    showLogin(async (playerId) => {
+if (savedPlayerId) {
+    console.log("Auto-login with playerId:", savedPlayerId);
+    this.playerId = savedPlayerId;
+    showModeSelection.call(this); // go straight to mode selection
+} else {
+    showLogin((playerId) => {
         this.playerId = playerId;
-
-        // Show singleplayer vs multiplayer choice overlay
-        const overlay = document.createElement('div');
-        overlay.style.position = 'absolute';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.background = 'rgba(0,0,0,0.85)';
-        overlay.style.display = 'flex';
-        overlay.style.flexDirection = 'column';
-        overlay.style.justifyContent = 'center';
-        overlay.style.alignItems = 'center';
-        overlay.style.zIndex = '1000';
-
-        const title = document.createElement('h2');
-        title.textContent = 'Choose Mode';
-        title.style.color = '#fff';
-        title.style.marginBottom = '20px';
-        overlay.appendChild(title);
-
-        const btnContainer = document.createElement('div');
-        btnContainer.style.display = 'flex';
-        btnContainer.style.gap = '20px';
-        overlay.appendChild(btnContainer);
-
-        const spBtn = document.createElement('button');
-        spBtn.textContent = 'Singleplayer';
-        btnContainer.appendChild(spBtn);
-
-        const mpBtn = document.createElement('button');
-        mpBtn.textContent = 'Multiplayer';
-        btnContainer.appendChild(mpBtn);
-
-        document.body.appendChild(overlay);
-
-        // Button actions
-        spBtn.addEventListener('click', () => {
-            overlay.remove();
-            startGame.call(this);
-        });
-
-        mpBtn.addEventListener('click', async () => {
-            overlay.remove();
-
-            try {
-                await enterMultiplayerQueue.call(this);
-                console.log("Starting multiplayer game");
-                startGame.call(this); // starts timer and allows update loop
-            } catch (err) {
-                console.error("Error entering queue:", err);
-            }
-        });
-
+        showModeSelection.call(this);
     });
-
+}
 }
 
 function onPlayerHitRat(player, rat) {
@@ -648,6 +601,79 @@ function showLogin(onLogin) {
         } catch (err) {
             status.textContent = err.message;
         }
+    });
+}
+
+// Show mode selection after login
+function showModeSelection() {
+    // Overlay for Singleplayer / Multiplayer + Logout
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '1000';
+
+    // Title
+    const title = document.createElement('h2');
+    title.textContent = 'Choose Mode';
+    title.style.color = '#fff';
+    title.style.marginBottom = '20px';
+    overlay.appendChild(title);
+
+    // Button container
+    const btnContainer = document.createElement('div');
+    btnContainer.style.display = 'flex';
+    btnContainer.style.gap = '20px';
+    overlay.appendChild(btnContainer);
+
+    const spBtn = document.createElement('button');
+    spBtn.textContent = 'Singleplayer';
+    btnContainer.appendChild(spBtn);
+
+    const mpBtn = document.createElement('button');
+    mpBtn.textContent = 'Multiplayer';
+    btnContainer.appendChild(mpBtn);
+
+    // Logout button
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'Logout';
+    logoutBtn.style.marginTop = '20px';
+    overlay.appendChild(logoutBtn);
+
+    document.body.appendChild(overlay);
+
+    // Singleplayer
+    spBtn.addEventListener('click', () => {
+        overlay.remove();
+        startGame.call(this);
+    });
+
+    // Multiplayer
+    mpBtn.addEventListener('click', async () => {
+        overlay.remove();
+        try {
+            await enterMultiplayerQueue.call(this);
+            startGame.call(this);
+        } catch (err) {
+            console.error("Error entering multiplayer queue:", err);
+        }
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('playerId');
+        overlay.remove();
+        showLogin((playerId) => {
+            localStorage.setItem('playerId', playerId);
+            showModeSelection.call(this);
+        });
     });
 }
 
