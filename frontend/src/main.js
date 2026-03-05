@@ -680,46 +680,47 @@ function showModeSelection() {
 async function enterMultiplayerQueue() {
     return new Promise(async (resolve, reject) => {
         let waitMsg;
-
         try {
-            // Create waiting message overlay
+            // Overlay waiting message
             waitMsg = document.createElement('div');
             waitMsg.textContent = "Waiting for another player...";
-            waitMsg.style.position = 'absolute';
-            waitMsg.style.top = '50%';
-            waitMsg.style.left = '50%';
-            waitMsg.style.transform = 'translate(-50%, -50%)';
-            waitMsg.style.color = "#fff";
-            waitMsg.style.fontSize = "24px";
-            waitMsg.style.background = "rgba(0,0,0,0.7)";
-            waitMsg.style.padding = "20px";
-            waitMsg.style.borderRadius = "10px";
-            waitMsg.style.zIndex = "1000";
+            Object.assign(waitMsg.style, {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: "#fff",
+                fontSize: "24px",
+                background: "rgba(0,0,0,0.7)",
+                padding: "20px",
+                borderRadius: "10px",
+                zIndex: "1000",
+                textAlign: "center"
+            });
             document.body.appendChild(waitMsg);
 
-            // join queue
-            const response = await fetch('/api/join-queue', {
+            // Join queue
+            const res = await fetch('/api/join-queue', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId: this.playerId })
             });
-            const data = await response.json();
+            const data = await res.json();
 
             if (data.matched) {
-                console.log("Match found immediately with:", data.players);
-                waitMsg.remove();
-                resolve(); // start the game
+                waitMsg.textContent = `Player : ${data.players.find(p => p !== this.playerId)} found! Starting game!`;
+                setTimeout(() => { waitMsg.remove(); resolve(); }, 1500);
             } else {
-                console.log("Waiting for another player...");
+                // Poll queue
                 const pollInterval = setInterval(async () => {
                     try {
-                        const res = await fetch(`/api/queue-status?playerId=${this.playerId}`);
-                        const status = await res.json();
+                        const statusRes = await fetch(`/api/queue-status?playerId=${this.playerId}`);
+                        const status = await statusRes.json();
+
                         if (status.matched) {
-                            console.log("Match found via polling");
+                            waitMsg.textContent = `${status.players.find(p => p !== this.playerId)} found! Starting game!`;
                             clearInterval(pollInterval);
-                            waitMsg.remove(); // remove overlay
-                            resolve(); // start the game
+                            setTimeout(() => { waitMsg.remove(); resolve(); }, 1500);
                         }
                     } catch (err) {
                         clearInterval(pollInterval);
@@ -728,6 +729,7 @@ async function enterMultiplayerQueue() {
                     }
                 }, 2000);
             }
+
         } catch (err) {
             if (waitMsg) waitMsg.remove();
             reject(err);
