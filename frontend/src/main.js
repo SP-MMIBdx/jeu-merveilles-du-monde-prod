@@ -3,7 +3,7 @@ import { setupCounter } from './counter.js';
 import Phaser from 'phaser';
 
 // Base URL for API calls
-const API_BASE = 'https://jeu-merveilles-du-monde-prod.onrender.com';
+const API_BASE = 'http://localhost:3000';
 
 /* -----------------------
 DOM (Vite template)

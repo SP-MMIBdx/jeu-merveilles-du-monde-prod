@@ -142,7 +142,7 @@ app.get('/api/queue', (req, res) => {
 });
 
 app.get('/api/scores/clear', (req, res) => {
-    scores = [];
+    scores.length = 0; // mutate the array instead of reassigning
     fs.writeFileSync(scoresFile, JSON.stringify([]));
     res.json({ message: "Scores cleared" });
 });
