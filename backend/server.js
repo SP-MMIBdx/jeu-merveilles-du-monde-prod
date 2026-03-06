@@ -141,5 +141,14 @@ app.get('/api/queue', (req, res) => {
     res.json(queue);
 });
 
+app.get('/api/scores/clear', (req, res) => {
+    scores = [];
+    fs.writeFileSync(scoresFile, JSON.stringify([]));
+    res.json({ message: "Scores cleared" });
+});
+
+// DELETE localhost:3000/api/scores/clear
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Serveur sur port ${PORT}`));
