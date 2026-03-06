@@ -115,7 +115,7 @@ function create() {
     this.roundEnded = false;
     this.score = 0; // number of biscuits collected
     this.remainingTime = 60; // 60 seconds per round
-    this.playerHealth = 10; // number of hits the player can take
+    this.playerHealth = 20; // number of hits the player can take
 
     /* INPUT */
     this.cursors = this.input.keyboard.createCursorKeys();
