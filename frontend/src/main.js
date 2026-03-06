@@ -2,6 +2,9 @@ import './style.css';
 import { setupCounter } from './counter.js';
 import Phaser from 'phaser';
 
+// Base URL for API calls
+const API_BASE = 'https://jeu-merveilles-du-monde-prod.onrender.com';
+
 /* -----------------------
 DOM (Vite template)
 ----------------------- */
@@ -366,7 +369,7 @@ function create() {
     this.roundEndUI.add(this.roundEndRestartText);
 
     /* BACKEND TEST (THIS MUST BE INSIDE CREATE) */
-    fetch('/api/hello')
+    fetch(`${API_BASE}/api/hello`)
         .then(res => res.json())
         .then(data => {
             // Example: data.message = "Level 1"
@@ -547,12 +550,12 @@ function updateRunningScore() {
 }
 
 async function fetchLeaderboard() {
-    const response = await fetch('/api/scores');
+    const response = await fetch(`${API_BASE}/api/scores`);
     return await response.json();
 }
 
 async function sendScore(playerId, score) {
-    await fetch('/api/score', {
+    await fetch(`${API_BASE}/api/score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -646,7 +649,7 @@ function showLogin(onLogin) {
         }
 
         try {
-            const data = await postData('/api/signin', { login, password });
+            const data = await postData(`${API_BASE}/api/signin`, { login, password });
             localStorage.setItem('playerId', data.playerId); // save to localStorage
             overlay.remove();
             onLogin(data.playerId); // resume Phaser game
@@ -665,7 +668,7 @@ function showLogin(onLogin) {
         }
 
         try {
-            const data = await postData('/api/signup', { login, password });
+            const data = await postData(`${API_BASE}/api/signup`, { login, password });
             localStorage.setItem('playerId', data.playerId); // save to localStorage
             overlay.remove();
             onLogin(data.playerId); // resume Phaser game
@@ -769,7 +772,7 @@ async function enterMultiplayerQueue() {
             document.body.appendChild(waitMsg);
 
             // join queue
-            const response = await fetch('/api/join-queue', {
+            const response = await fetch(`${API_BASE}/api/join-queue`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId: this.playerId })
@@ -784,7 +787,7 @@ async function enterMultiplayerQueue() {
                 console.log("Waiting for another player...");
                 const pollInterval = setInterval(async () => {
                     try {
-                        const res = await fetch(`/api/queue-status?playerId=${this.playerId}`);
+                        const res = await fetch(`${API_BASE}/api/queue-status?playerId=${this.playerId}`);
                         const status = await res.json();
                         if (status.matched) {
                             console.log("Match found via polling");

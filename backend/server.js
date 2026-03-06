@@ -141,4 +141,5 @@ app.get('/api/queue', (req, res) => {
     res.json(queue);
 });
 
-app.listen(3000, () => console.log("Serveur sur port 3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Serveur sur port ${PORT}`));
