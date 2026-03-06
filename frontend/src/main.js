@@ -19,6 +19,10 @@ app.appendChild(logo);
 const card = document.createElement('div');
 card.classList.add('card');
 
+// global variable to hold background music instance
+let bgMusic;
+let musicBtnInitialized = false; // track if button listener is already set
+
 /*const btn = document.createElement('button');
 btn.id = 'counter';
 card.appendChild(btn);
@@ -55,35 +59,38 @@ function create() {
 
     console.log("Phaser create called");
 
+     // --- Music setup ---
+    if (!bgMusic) {
+        // Add the music once
+        bgMusic = this.sound.add('bgMusic', { loop: true, volume: 0.5 });
+    }
+
+    // Get button from DOM
+    const musicBtn = document.getElementById('music-toggle');
+
+    // Only add the listener once
+    if (!musicBtnInitialized) {
+        musicBtn.addEventListener('click', () => {
+            if (bgMusic.isPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = "🎵 Play Music";
+            } else {
+                bgMusic.play();
+                musicBtn.textContent = "⏸ Pause Music";
+            }
+        });
+        musicBtnInitialized = true;
+    }
+
+    // Sync button text to current music state every time scene starts
+    musicBtn.textContent = bgMusic.isPlaying ? "⏸ Pause Music" : "🎵 Play Music";
+
     // Game not started until player logs in and chooses mode
     this.gameStarted = false;
 
     // Set world bounds larger than the viewport for horizontal scrolling
     const worldWidth = 5000;
 
-        // Background music
-    this.bgMusic = this.sound.add('bgMusic', {
-        volume: 0.5,
-        loop: true
-    });
-
-    // expose it globally so UI can access it
-    window.gameMusic = this.bgMusic;
-
-    // Connect existing button to Phaser sound
-const musicBtn = document.getElementById('music-toggle');
-
-musicBtn.addEventListener('click', () => {
-
-    if (this.bgMusic.isPlaying) {
-        this.bgMusic.pause();
-        musicBtn.textContent = "Play Music";
-    } else {
-        this.bgMusic.play();
-        musicBtn.textContent = "Pause Music";
-    }
-
-});
 
     // Background
     const bgTexture = this.textures.get('bg').getSourceImage();
