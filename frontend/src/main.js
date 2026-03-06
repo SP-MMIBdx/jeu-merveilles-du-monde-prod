@@ -61,6 +61,30 @@ function create() {
     // Set world bounds larger than the viewport for horizontal scrolling
     const worldWidth = 5000;
 
+        // Background music
+    this.bgMusic = this.sound.add('bgMusic', {
+        volume: 0.5,
+        loop: true
+    });
+
+    // expose it globally so UI can access it
+    window.gameMusic = this.bgMusic;
+
+    // Connect existing button to Phaser sound
+const musicBtn = document.getElementById('music-toggle');
+
+musicBtn.addEventListener('click', () => {
+
+    if (this.bgMusic.isPlaying) {
+        this.bgMusic.pause();
+        musicBtn.textContent = "Play Music";
+    } else {
+        this.bgMusic.play();
+        musicBtn.textContent = "Pause Music";
+    }
+
+});
+
     // Background
     const bgTexture = this.textures.get('bg').getSourceImage();
 
@@ -93,54 +117,54 @@ function create() {
     this.hud = this.add.container(20, 40); // top-left corner
     this.hud.setScrollFactor(0); // UI should not scroll with the world
 
-// Horizontal container for icon + number
-this.biscuitContainer = this.add.container(0, 0); 
+    // Horizontal container for icon + number
+    this.biscuitContainer = this.add.container(0, 0);
 
-this.biscuitIcon = this.add.image(0, 0, 'biscuit').setScale(0.1).setOrigin(0, 0.5); // vertically centered
+    this.biscuitIcon = this.add.image(0, 0, 'biscuit').setScale(0.1).setOrigin(0, 0.5); // vertically centered
 
-this.scoreText = this.add.text(this.biscuitIcon.width * 0.09 + 10, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(0, 0.5); // number to the right of icon, vertically centered
+    this.scoreText = this.add.text(this.biscuitIcon.width * 0.09 + 10, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(0, 0.5); // number to the right of icon, vertically centered
 
-this.biscuitContainer.add([this.biscuitIcon, this.scoreText]); // add both to container
+    this.biscuitContainer.add([this.biscuitIcon, this.scoreText]); // add both to container
 
-// Horizontal container for heart + number
-this.healthContainer = this.add.container(0, 0);
+    // Horizontal container for heart + number
+    this.healthContainer = this.add.container(0, 0);
 
-// Heart icon vertically centered
-this.heartIcon = this.add.image(0, 0, 'heart').setScale(0.033).setOrigin(0, 0.5);
+    // Heart icon vertically centered
+    this.heartIcon = this.add.image(0, 0, 'heart').setScale(0.033).setOrigin(0, 0.5);
 
-this.healthText = this.add.text(this.heartIcon.width * 0.03 + 10, 0, "x" + this.playerHealth, { 
-    fontSize: '20px', 
-    color: '#A52A2A' 
-}).setOrigin(0, 0.5);
+    this.healthText = this.add.text(this.heartIcon.width * 0.03 + 10, 0, "x" + this.playerHealth, {
+        fontSize: '20px',
+        color: '#A52A2A'
+    }).setOrigin(0, 0.5);
 
-this.healthContainer.add([this.heartIcon, this.healthText]);
+    this.healthContainer.add([this.heartIcon, this.healthText]);
 
 
     // Add all HUD elements to container at once
-[this.biscuitContainer, this.healthContainer,].forEach(el => this.hud.add(el));
+    [this.biscuitContainer, this.healthContainer,].forEach(el => this.hud.add(el));
 
 
-let offsetY = 0;
-[this.biscuitContainer, this.healthContainer].forEach(el => {
-    el.setY(offsetY);
-    offsetY += parseInt(el.style?.fontSize || 20, 10) + 30; // spacing
-});
+    let offsetY = 0;
+    [this.biscuitContainer, this.healthContainer].forEach(el => {
+        el.setY(offsetY);
+        offsetY += parseInt(el.style?.fontSize || 20, 10) + 30; // spacing
+    });
 
-// Timer + running score container (top-right)
-this.timerContainer = this.add.container(this.scale.width - 20, 40); // start 20px from right
-this.timerContainer.setScrollFactor(0); // fixed to camera
+    // Timer + running score container (top-right)
+    this.timerContainer = this.add.container(this.scale.width - 20, 40); // start 20px from right
+    this.timerContainer.setScrollFactor(0); // fixed to camera
 
-// Timer icon (optional if you want a small clock image, can skip if not)
-this.timerIcon = this.add.image(0, 0, 'timer').setScale(0.5).setOrigin(1, 0.5); // origin right-aligned
+    // Timer icon (optional if you want a small clock image, can skip if not)
+    this.timerIcon = this.add.image(0, 0, 'timer').setScale(0.5).setOrigin(1, 0.5); // origin right-aligned
 
-// Timer text
-this.timerText = this.add.text(-60, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
+    // Timer text
+    this.timerText = this.add.text(-60, 0, "", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
 
-// Running score text
-this.runningScoreText = this.add.text(0, 40, "Score: 0", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
+    // Running score text
+    this.runningScoreText = this.add.text(0, 40, "Score: 0", { fontSize: '20px', color: '#A52A2A' }).setOrigin(1, 0.5);
 
-// Add to container
-this.timerContainer.add([this.timerIcon, this.timerText, this.runningScoreText]);
+    // Add to container
+    this.timerContainer.add([this.timerIcon, this.timerText, this.runningScoreText]);
 
     /* WORLD */
 
