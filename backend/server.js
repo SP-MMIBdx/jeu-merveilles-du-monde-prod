@@ -149,6 +149,13 @@ app.get('/api/scores/clear', (req, res) => {
 
 // DELETE localhost:3000/api/scores/clear
 
+app.get('/api/users/clear', (req, res) => {
+    users.length = 0;
+    fs.writeFileSync(usersFile, JSON.stringify([]));
+    res.json({ message: "Users cleared" });
+});
+
+// DELETE localhost:3000/api/users/clear
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Serveur sur port ${PORT}`));
