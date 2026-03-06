@@ -36,7 +36,6 @@ function preload() {
     this.load.image('heart', 'assets/img/heart.png');
     this.load.image('timer', 'assets/img/timer.png');
     this.load.audio('bgMusic', 'assets/audio/BackgroundMusic.mp3');
-}
 
     // Lion frames
     for (let i = 1; i <= 5; i++) {
